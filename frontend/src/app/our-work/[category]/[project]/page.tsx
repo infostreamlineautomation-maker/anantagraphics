@@ -105,15 +105,21 @@ export default async function ProjectPage({ params }: Props) {
               {str(header, "explore_title", "Explore more projects")}
             </h2>
           </FadeIn>
-          <StaggerContainer stagger={0.1} className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 md:mt-8 md:gap-8">
+          <StaggerContainer
+            stagger={0.1}
+            className="mt-6 -mx-5 px-5 flex overflow-x-auto snap-x snap-mandatory gap-4 pb-3 sm:mx-0 sm:px-0 sm:pb-0 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-6 md:mt-8 md:gap-8 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          >
             {p.explore.map((e) => (
-              <StaggerItem key={e.id}>
+              <StaggerItem
+                key={e.id}
+                className="w-[78vw] max-w-[320px] shrink-0 snap-start sm:w-auto sm:max-w-none sm:shrink"
+              >
                 <Link href={`/our-work/${e.category_slug}/${e.slug}`} className="group block transition-transform duration-300 hover:-translate-y-1.5">
                   <div className="relative aspect-[526/463] overflow-hidden rounded-media bg-panel shadow-xs transition-shadow duration-300 group-hover:shadow-lg">
                     <MediaImage
                       src={e.cover_image}
                       alt=""
-                      sizes="(min-width: 1024px) 400px, (min-width: 640px) 45vw, 92vw"
+                      sizes="(min-width: 1024px) 400px, (min-width: 640px) 45vw, 85vw"
                       className="transition-transform duration-500 group-hover:scale-[1.04]"
                     />
                   </div>

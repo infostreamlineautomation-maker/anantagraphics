@@ -60,7 +60,7 @@ export function HeaderNav({ brand, contact, socials }: Props) {
           <NavGroup links={NAV_RIGHT} pathname={pathname} className="pr-8 pl-5 lg:pr-10 lg:pl-6" />
         </nav>
 
-        {/* Phones: menu button | badge | contact, same pill */}
+        {/* Phones: menu button | badge, balanced pill */}
         <div className="relative flex w-full max-w-sm items-center justify-between md:hidden">
           <div aria-hidden className="absolute inset-x-0 top-1/2 h-10 -translate-y-1/2 rounded-pill bg-brand shadow-[0_6px_20px_rgb(0_0_0/0.12)]" />
           <button
@@ -73,9 +73,7 @@ export function HeaderNav({ brand, contact, socials }: Props) {
             <MenuIcon className="size-6" />
           </button>
           {badge}
-          <Link href="/contact" className="relative mr-4 font-sans text-xs text-white">
-            Contact Us
-          </Link>
+          <div aria-hidden className="w-10 mr-2 pointer-events-none" />
         </div>
       </div>
 
