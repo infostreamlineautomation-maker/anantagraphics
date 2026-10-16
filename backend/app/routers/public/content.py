@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session, selectinload
 from app.core.database import get_db
 from app.models import Client, Faq, PageSection, Project, Service, SiteSetting, WorkCategory
 from app.schemas.content import (
+    SETTING_KEYS,
     ClientOut,
     ExploreCard,
     FaqOut,
@@ -25,7 +26,7 @@ EXPLORE_COUNT = 3
 @router.get("/settings")
 def get_settings(db: Session = Depends(get_db)) -> dict[str, dict]:
     """Brand, contact details, socials, footer and SEO defaults."""
-    return {s.key: s.value for s in db.scalars(select(SiteSetting))}
+    return {s.key: s.value for s in db.scalars(select(SiteSetting).where(SiteSetting.key.in_(SETTING_KEYS)))}
 
 
 @router.get("/pages/{page}", response_model=PageOut)

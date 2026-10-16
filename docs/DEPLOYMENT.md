@@ -24,7 +24,8 @@ Setup creates the `ananta_graphics` database itself.
 
 ```bash
 mkdir -p /var/www && cd /var/www
-git clone <repo-url> anantagraphics && cd anantagraphics
+git clone https://github.com/infostreamlineautomation-maker/anantagraphics.git
+cd anantagraphics
 chmod +x scripts/*.sh
 ./scripts/setup.sh --prod
 ```
@@ -34,40 +35,22 @@ The first run creates the env files; edit them, then run setup again so it can c
 
 | File                  | Set |
 |-----------------------|-----|
-| `backend/.env`        | `DATABASE_URL=postgresql+psycopg://ananta:strong-password@localhost:5432/ananta_graphics`, `CORS_ORIGINS=https://example.com,https://www.example.com`, `ADMIN_CORS_ORIGINS=https://admin.example.com`, `SITE_URL`, `CMS_URL`, `SMTP_*` + `ENQUIRY_NOTIFY_TO`. `APP_ENV`, `SECRET_KEY` and `REVALIDATE_SECRET` are set by setup. |
-| `frontend/.env.local` | `NEXT_PUBLIC_API_URL=https://api.example.com`, `API_INTERNAL_URL=http://127.0.0.1:8000`, `NEXT_PUBLIC_SITE_URL=https://example.com` |
-| `cms/.env.local`      | `NEXT_PUBLIC_ADMIN_API_URL=https://admin-api.example.com`, `NEXT_PUBLIC_SITE_URL=https://example.com` |
+| `backend/.env`        | `DATABASE_URL=postgresql+psycopg://ananta:strong-password@localhost:5432/ananta_graphics`, `CORS_ORIGINS=https://example.com,https://www.example.com`, `ADMIN_CORS_ORIGINS=https://admin.example.com`, `SITE_URL=https://example.com`, `CMS_URL=https://admin.example.com`, `REVALIDATE_URL=http://127.0.0.1:3100/api/revalidate`. (SMTP is optional; can be set up in CMS). |
+| `frontend/.env.local` | `NEXT_PUBLIC_SITE_URL=https://example.com`, `NEXT_PUBLIC_API_URL=https://api.example.com`, `API_INTERNAL_URL=http://127.0.0.1:8100` |
+| `cms/.env.local`      | `NEXT_PUBLIC_SITE_URL=https://example.com`, `NEXT_PUBLIC_ADMIN_API_URL=https://admin-api.example.com` |
 
 ```bash
 cd backend && ./venv/bin/python -m app.cli create-admin --email you@example.com && cd ..
-./scripts/run.sh prod        # migrate + seed, start APIs, build website + CMS, start all under PM2
+WEB_PORT=3100 CMS_PORT=3101 API_PORT=8100 ADMIN_API_PORT=8101 ./scripts/run.sh prod
 pm2 startup                  # run the command it prints (auto-start on reboot)
+pm2 save
 ```
 
-Sharing the VPS with another site? Start with other ports, e.g.
-`WEB_PORT=3100 CMS_PORT=3101 API_PORT=8100 ADMIN_API_PORT=8101 ./scripts/run.sh prod`, and use the same ports
-in the Nginx file and `API_INTERNAL_URL` / `REVALIDATE_URL`.
+### Enquiry email alerts (Optional)
 
-### Enquiry email alerts
+New enquiries are always safely saved in the CMS database. Outgoing email alerts are optional and can be configured at any time directly through the **CMS Panel** (**Settings → Email notifications & SMTP**) without touching server files or restarting APIs.
 
-New enquiries are always saved in the CMS; the email alert is extra. In `backend/.env`:
-
-| Key | Example (Hostinger mailbox) |
-|-----|-----------------------------|
-| `SMTP_HOST` | `smtp.hostinger.com` |
-| `SMTP_PORT` / `SMTP_SSL` | `465` / `true` (or `587` / `false` for STARTTLS) |
-| `SMTP_USER` / `SMTP_PASSWORD` | the mailbox login, e.g. `alerts@yourdomain.com` |
-| `SMTP_FROM` | `Ananta Graphics <alerts@yourdomain.com>` (must be that mailbox or an alias of it) |
-| `ENQUIRY_NOTIFY_TO` | who gets alerts, comma-separated: `office@yourdomain.com, sales@yourdomain.com` |
-
-Restart the APIs (`./scripts/run.sh prod`), then check it from the CMS (**Settings → Email notifications →
-Send test email**) or on the server:
-
-```bash
-cd backend && ./venv/bin/python -m app.cli send-test-email --to you@yourdomain.com
-```
-
-Alerts come from your own mailbox with **Reply-To** set to the visitor, so "Reply" answers them directly.
+You can leave all `SMTP_*` variables empty in `backend/.env`. If you prefer setting them in `.env`, the server will fall back to those values if not configured in the CMS.
 
 ## 4. DNS
 

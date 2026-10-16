@@ -58,10 +58,56 @@ class TestEmail(BaseModel):
     to: EmailStr | None = None  # defaults to the signed-in admin's address
 
 
+class SmtpUpdate(BaseModel):
+    host: str = ""
+    port: int = 465
+    ssl: bool = True
+    user: str = ""
+    password: str | None = None
+    from_email: str = ""
+    notify_to: str = ""
+
+
 @router.get("/email")
-def email_status() -> dict:
-    """Whether enquiry alerts can be sent, and to whom (configured in backend/.env)."""
-    return mailer.status()
+def email_status(db: Session = Depends(get_db)) -> dict:
+    """Whether enquiry alerts can be sent, and to whom (configured via CMS or backend/.env)."""
+    return mailer.status(db)
+
+
+@router.put("/email")
+def update_email_settings(
+    payload: SmtpUpdate,
+    request: Request,
+    db: Session = Depends(get_db),
+    admin: AdminUser = Depends(get_current_admin),
+) -> dict:
+    """Configure or update SMTP settings for enquiry notifications."""
+    setting = db.get(SiteSetting, "smtp_config")
+    existing_val = dict(setting.value) if setting and isinstance(setting.value, dict) else {}
+
+    pwd = payload.password if (payload.password is not None and payload.password != "") else existing_val.get("password", "")
+
+    new_val = {
+        "host": payload.host.strip(),
+        "port": payload.port,
+        "ssl": payload.ssl,
+        "user": payload.user.strip(),
+        "password": pwd,
+        "from_email": payload.from_email.strip(),
+        "notify_to": payload.notify_to.strip(),
+    }
+
+    if setting is None:
+        setting = SiteSetting(key="smtp_config", value=new_val)
+        db.add(setting)
+    else:
+        setting.value = new_val
+
+    audit_changes = {k: v for k, v in new_val.items() if k != "password"}
+    audit.record(db, admin, "update", "settings", "Updated SMTP email settings", "smtp", audit_changes, request)
+    db.commit()
+
+    return mailer.status(db)
 
 
 @router.post("/email/test")
@@ -73,13 +119,14 @@ def send_test_email(
     admin: AdminUser = Depends(get_current_admin),
 ) -> dict:
     to = str(payload.to or admin.email)
+    recipients = mailer.notify_recipients(db)
     text = (
         f"This is a test email from the {settings.APP_NAME} CMS, sent by {admin.email}.\n\n"
         "If you can read this, enquiry alerts are set up correctly.\n"
-        f"New enquiries are sent to: {', '.join(mailer.notify_recipients()) or '(nobody yet — set ENQUIRY_NOTIFY_TO)'}"
+        f"New enquiries are sent to: {', '.join(recipients) or '(nobody yet — set Enquiry Notification Recipients)'}"
     )
     try:
-        mailer.deliver([to], f"{settings.APP_NAME}: test email", text)
+        mailer.deliver([to], f"{settings.APP_NAME}: test email", text, db=db)
     except mailer.EmailError as exc:
         raise HTTPException(400, str(exc)) from None
     audit.record(db, admin, "update", "settings", f"Sent a test email to {to}", "email", request=request)

@@ -45,7 +45,7 @@ def _notify(enquiry_id: int) -> None:
     with SessionLocal() as db:
         e = db.get(Enquiry, enquiry_id)
         if e is not None:
-            send_email(notify_recipients(), f"{TYPE_LABELS[e.type]}: {e.name}", _notification_text(e), reply_to=e.email)
+            send_email(notify_recipients(db), f"{TYPE_LABELS[e.type]}: {e.name}", _notification_text(e), reply_to=e.email, db=db)
 
 
 @router.post("/enquiries", response_model=Accepted, status_code=201)
