@@ -15,10 +15,10 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BACKEND="$ROOT/backend"
 ECOSYSTEM="$ROOT/deploy/ecosystem.config.js"
 
-export WEB_PORT="${WEB_PORT:-3000}"
-export CMS_PORT="${CMS_PORT:-3001}"
-export API_PORT="${API_PORT:-8000}"
-export ADMIN_API_PORT="${ADMIN_API_PORT:-8001}"
+export WEB_PORT="${WEB_PORT:-3100}"
+export CMS_PORT="${CMS_PORT:-3101}"
+export API_PORT="${API_PORT:-8100}"
+export ADMIN_API_PORT="${ADMIN_API_PORT:-8101}"
 PORTS=("$API_PORT" "$ADMIN_API_PORT" "$WEB_PORT" "$CMS_PORT")
 STOP_TIMEOUT="${STOP_TIMEOUT:-10}"   # seconds to wait for a clean exit before force-killing
 

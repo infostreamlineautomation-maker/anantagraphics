@@ -6,10 +6,10 @@ const ROOT = path.resolve(__dirname, "..");
 const BACKEND = path.join(ROOT, "backend");
 const GUNICORN = path.join(BACKEND, "venv", "bin", "gunicorn");
 
-const WEB_PORT = process.env.WEB_PORT || 3000;
-const CMS_PORT = process.env.CMS_PORT || 3001;
-const API_PORT = process.env.API_PORT || 8000;
-const ADMIN_API_PORT = process.env.ADMIN_API_PORT || 8001;
+const WEB_PORT = process.env.WEB_PORT || 3100;
+const CMS_PORT = process.env.CMS_PORT || 3101;
+const API_PORT = process.env.API_PORT || 8100;
+const ADMIN_API_PORT = process.env.ADMIN_API_PORT || 8101;
 const API_WORKERS = process.env.API_WORKERS || 2;
 
 const gunicornArgs = (module, port, workers) =>
