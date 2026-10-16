@@ -1,0 +1,8 @@
+{
+  "name": "ananta-graphics",
+  "private": true,
+  "description": "Dev tooling only: scripts/run.bat uses concurrently to run all four services.",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
