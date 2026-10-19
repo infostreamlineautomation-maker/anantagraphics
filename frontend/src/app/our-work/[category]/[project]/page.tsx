@@ -83,15 +83,14 @@ export default async function ProjectPage({ params }: Props) {
       </div>
 
       {p.gallery.length > 0 && (
-        // Capped width so a gallery image never fills the whole screen
-        <div className="mx-auto mt-10 flex w-full max-w-4xl flex-col gap-5 md:mt-14 md:gap-7">
+        <div className="mt-10 flex w-full flex-col gap-6 md:mt-14 md:gap-8">
           {p.gallery.map((img, i) => (
             <FadeIn key={`${img}-${i}`} direction="up" distance={30} delay={Math.min(i * 0.08, 0.3)}>
-              <div className="group relative aspect-[16/9] overflow-hidden rounded-media bg-panel shadow-sm transition-shadow duration-500 hover:shadow-xl">
+              <div className="group relative w-full aspect-[16/10] md:aspect-[2/1] lg:aspect-[2.25/1] max-h-[640px] overflow-hidden rounded-[18px] md:rounded-[24px] bg-panel shadow-sm transition-shadow duration-500 hover:shadow-xl">
                 <MediaImage
                   src={img}
                   alt={`${p.title} — image ${i + 1}`}
-                  sizes="(min-width: 1024px) 896px, 94vw"
+                  sizes="(min-width: 1680px) 1680px, 96vw"
                   className="transition-transform duration-700 ease-out group-hover:scale-[1.02]"
                 />
               </div>
