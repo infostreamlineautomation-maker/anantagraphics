@@ -26,6 +26,45 @@ def test_enquiry_keeps_service_name_and_drops_honeypot(public_client, admin_clie
     assert admin_client.get("/enquiries?status=new").json()["total"] == 0
 
 
+def test_anti_spam_filters_and_phone_normalization(public_client, admin_client):
+    # Secondary honeypot dropped
+    r1 = public_client.post("/enquiries", json={"name": "Bot Two", "email": "b2@example.com", "user_company_url": "https://evil.com"})
+    assert r1.status_code == 201
+
+    # Velocity / time-to-submit dropped
+    r2 = public_client.post("/enquiries", json={"name": "Fast Bot", "email": "fast@example.com", "elapsed_ms": 350})
+    assert r2.status_code == 201
+
+    # Disposable burner email dropped
+    r3 = public_client.post("/enquiries", json={"name": "Spam Lead", "email": "spammer@mailinator.com", "message": "hello"})
+    assert r3.status_code == 201
+
+    # Cyrillic bot spam dropped
+    r4 = public_client.post("/enquiries", json={"name": "Иван Смирнов", "email": "ivan@example.com", "message": "Привет качественная раскрутка сайта"})
+    assert r4.status_code == 201
+
+    # Spam keyword dropped
+    r5 = public_client.post("/enquiries", json={"name": "SEO Seller", "email": "seller@example.com", "message": "Check our seo ranking and backlink service"})
+    assert r5.status_code == 201
+
+    # None of the spam attempts should reach admin inbox
+    assert admin_client.get("/enquiries").json()["total"] == 0
+
+    # Legitimate submission with raw phone number auto-normalizes with +91
+    legit = public_client.post("/enquiries", json={
+        "name": "Arjun Patel",
+        "email": "arjun@example.com",
+        "phone": "98250 12345",
+        "message": "We need custom brochure printing for our launch.",
+        "elapsed_ms": 8500,
+    })
+    assert legit.status_code == 201
+    items = admin_client.get("/enquiries").json()["items"]
+    assert len(items) == 1
+    assert items[0]["name"] == "Arjun Patel"
+    assert items[0]["phone"] == "+91 98250 12345"
+
+
 def test_enquiry_validation_and_rate_limit(public_client):
     from app.core.limiter import limiter
 

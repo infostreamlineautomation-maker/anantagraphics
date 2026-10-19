@@ -7,6 +7,7 @@ import { mediaUrl } from "@/lib/media";
 
 import { NewsletterForm } from "./NewsletterForm";
 import { SocialIcons } from "./SocialIcons";
+import { formatDisplayPhone } from "@/components/sections/ContactRows";
 
 /** Light-grey footer: logo, tagline + newsletter, Explore, Get in Touch; white legal bar below. */
 export async function SiteFooter() {
@@ -48,13 +49,18 @@ export async function SiteFooter() {
                 </ul>
               </nav>
 
-              <div>
-                <p className="text-title font-semibold text-ink">Get in Touch</p>
-                <address className="mt-3 flex max-w-64 flex-col gap-1.5 text-body-lg text-ink-soft not-italic md:mt-4">
-                  <a href={`tel:${contact.phone.replace(/[^\d+]/g, "")}`} className="hover:text-brand">
-                    {contact.phone}
-                  </a>
-                  <a href={`mailto:${contact.email}`} className="break-all hover:text-brand">
+                <div>
+                  <p className="text-title font-semibold text-ink">Get in Touch</p>
+                  <address className="mt-3 flex max-w-64 flex-col gap-1.5 text-body-lg text-ink-soft not-italic md:mt-4">
+                    {(() => {
+                      const displayPhone = formatDisplayPhone(contact.phone);
+                      return (
+                        <a href={`tel:${displayPhone.replace(/[^\d+]/g, "")}`} className="hover:text-brand">
+                          {displayPhone}
+                        </a>
+                      );
+                    })()}
+                    <a href={`mailto:${contact.email}`} className="break-all hover:text-brand">
                     {contact.email}
                   </a>
                   <a href={contact.map_url} target="_blank" rel="noopener noreferrer" className="hover:text-brand">

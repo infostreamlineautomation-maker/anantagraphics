@@ -25,7 +25,8 @@ export function NewsletterForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: String(data.get("email") ?? "").trim(),
-          website: String(data.get("website") ?? ""), // honeypot: real visitors leave it empty
+          website: String(data.get("website") ?? "").trim() || undefined,
+          user_company_url: String(data.get("user_company_url") ?? "").trim() || undefined,
           source_page: pathname,
         }),
       });
@@ -54,8 +55,22 @@ export function NewsletterForm() {
           placeholder="Email"
           className="h-11 min-w-0 flex-1 rounded-pill border border-ink-soft bg-white px-5 font-footer text-base text-ink outline-none placeholder:text-faint focus:border-brand md:h-12 md:px-6"
         />
-        {/* Honeypot, hidden from people and screen readers */}
-        <input name="website" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
+        {/* Decoy honeypots: invisible to humans, auto-filled by automated spambots */}
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            left: "-9999px",
+            opacity: 0,
+            width: "1px",
+            height: "1px",
+            overflow: "hidden",
+            pointerEvents: "none",
+          }}
+        >
+          <input name="website" tabIndex={-1} autoComplete="off" />
+          <input name="user_company_url" tabIndex={-1} autoComplete="off" />
+        </div>
         <button
           type="submit"
           disabled={status === "sending"}

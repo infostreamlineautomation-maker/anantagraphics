@@ -2,10 +2,22 @@ import type { Settings } from "@/lib/types";
 
 type Row = { icon: string; label: string; text: string; href?: string };
 
+/** Format phone with +91 prefix for Indian phone cards */
+export function formatDisplayPhone(phone?: string | null): string {
+  const raw = (phone || "").trim();
+  if (!raw) return "+91 773-365-1240";
+  if (raw.startsWith("+91")) return raw;
+  if (raw.startsWith("+")) return raw;
+  const clean = raw.replace(/^0+/, "");
+  return `+91 ${clean}`;
+}
+
 /** Call / Email / Address rows built from the CMS contact settings. */
 export function contactRows(contact: Settings["contact"]): Row[] {
+  const phoneText = formatDisplayPhone(contact.phone);
+  const telHref = phoneText.replace(/[^\d+]/g, "");
   return [
-    { icon: "📞", label: "Call Us", text: contact.phone, href: `tel:${contact.phone.replace(/[^\d+]/g, "")}` },
+    { icon: "📞", label: "Call Us", text: phoneText, href: `tel:${telHref}` },
     { icon: "✉️", label: "Email Us", text: contact.email, href: `mailto:${contact.email}` },
     { icon: "📍", label: "Office Address", text: contact.address, href: contact.map_url },
   ];

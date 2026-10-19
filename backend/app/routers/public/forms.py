@@ -1,4 +1,5 @@
 import logging
+import re
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Request
 from sqlalchemy import select
@@ -19,6 +20,67 @@ log = logging.getLogger(__name__)
 TYPE_LABELS = {"contact": "Project enquiry", "quote": "Quote request"}
 ENQUIRY_THANKS = "Thank you! We'll get back to you within 24 hours."
 NEWSLETTER_THANKS = "Thanks — you're on the list."
+
+# Disposable / burner email domains commonly used by spam bots
+DISPOSABLE_EMAIL_DOMAINS = {
+    "mailinator.com", "guerrillamail.com", "tempmail.com", "temp-mail.org",
+    "10minutemail.com", "throwawaymail.com", "yopmail.com", "sharklasers.com",
+    "getairmail.com", "dispostable.com", "trashmail.com", "mytempemail.com",
+    "maildrop.cc", "mohmal.com", "emailondeck.com", "crazymailing.com",
+}
+
+# Commercial spam keywords used by bulk contact-form blast scripts
+SPAM_KEYWORDS = (
+    "casino", "viagra", "cialis", "poker", "cryptocurrency", "crypto investment",
+    "seo ranking", "backlink service", "guest post", "da90", "dr80",
+    "whatsapp at +", "t.me/", "telegram:", "buy backlinks", "search engine ranking",
+    "porn", "adult dating", "loan offer", "investment profit"
+)
+
+CYRILLIC_PATTERN = re.compile(r"[\u0400-\u04FF]")
+URL_PATTERN = re.compile(r"https?://|www\.", re.IGNORECASE)
+
+
+def _is_spam(payload: EnquiryCreate, request: Request) -> tuple[bool, str]:
+    """Inspect submission for automated bot, honeypot, velocity, and spambot patterns."""
+    # 1. Multi-field honeypot traps
+    if payload.website:
+        return True, "honeypot 'website' filled"
+    if payload.user_company_url:
+        return True, "honeypot 'user_company_url' filled"
+
+    # 2. Timing check: bots submit in under 1800ms
+    if payload.elapsed_ms is not None and payload.elapsed_ms < 1800:
+        return True, f"submitted too fast ({payload.elapsed_ms}ms)"
+
+    # 3. Disposable/burner email check
+    email_domain = payload.email.split("@")[-1].lower()
+    if email_domain in DISPOSABLE_EMAIL_DOMAINS:
+        return True, f"disposable email domain ({email_domain})"
+
+    # 4. Cyrillic script blast check (> 5 characters in English/Indian contact form)
+    text_to_check = f"{payload.name} {payload.message or ''}"
+    cyrillic_chars = CYRILLIC_PATTERN.findall(text_to_check)
+    if len(cyrillic_chars) > 5:
+        return True, f"excessive cyrillic script ({len(cyrillic_chars)} chars)"
+
+    # 5. Link stuffing and spam keywords
+    if payload.message:
+        urls = URL_PATTERN.findall(payload.message)
+        if len(urls) > 2:
+            return True, f"excessive URLs in message ({len(urls)})"
+
+        lower_msg = payload.message.lower()
+        for kw in SPAM_KEYWORDS:
+            if kw in lower_msg:
+                return True, f"spam keyword '{kw}' detected"
+
+    # 6. Automated scraping / script bot user agents
+    ua = (request.headers.get("user-agent") or "").lower()
+    if any(sig in ua for sig in ("scrapy", "python-requests", "aiohttp", "headlesschrome", "phantomjs")):
+        return True, f"bot user agent ({ua[:40]})"
+
+    return False, ""
 
 
 def _notification_text(e: Enquiry) -> str:
@@ -51,18 +113,25 @@ def _notify(enquiry_id: int) -> None:
 @router.post("/enquiries", response_model=Accepted, status_code=201)
 @limiter.limit("5/minute;30/day")
 def create_enquiry(request: Request, payload: EnquiryCreate, background: BackgroundTasks, db: Session = Depends(get_db)):
-    if payload.website:
-        # Honeypot filled: pretend success so bots learn nothing
-        log.info("Dropped enquiry from %s (honeypot)", client_ip(request))
+    is_spam, reason = _is_spam(payload, request)
+    if is_spam:
+        # Silent tarpit: pretend success so bots learn nothing and do not mutate/retry
+        log.warning("Dropped spam enquiry from %s: %s", client_ip(request), reason)
         return Accepted(message=ENQUIRY_THANKS)
 
     service = db.scalar(select(Service).where(Service.id == payload.service_id)) if payload.service_id else None
+
+    # Normalize phone: ensure +91 prefix if not present and non-empty
+    phone_clean = (payload.phone or "").strip() or None
+    if phone_clean and not phone_clean.startswith("+"):
+        phone_clean = f"+91 {phone_clean.lstrip('0')}"
+
     enquiry = Enquiry(
         type=payload.type,
         name=payload.name.strip(),
-        email=payload.email.lower(),
-        phone=payload.phone,
-        message=payload.message,
+        email=payload.email.lower().strip(),
+        phone=phone_clean,
+        message=payload.message.strip() if payload.message else None,
         service_id=service.id if service else None,
         service_name=service.title if service else None,
         source_page=payload.source_page,
@@ -78,9 +147,15 @@ def create_enquiry(request: Request, payload: EnquiryCreate, background: Backgro
 @router.post("/newsletter", response_model=Accepted, status_code=201)
 @limiter.limit("5/minute;20/day")
 def subscribe(request: Request, payload: NewsletterCreate, db: Session = Depends(get_db)):
-    if payload.website:
+    if payload.website or payload.user_company_url:
         return Accepted(message=NEWSLETTER_THANKS)
-    email = payload.email.lower()
+
+    email = payload.email.lower().strip()
+    email_domain = email.split("@")[-1].lower()
+    if email_domain in DISPOSABLE_EMAIL_DOMAINS:
+        log.info("Dropped disposable email newsletter subscription from %s (%s)", client_ip(request), email_domain)
+        return Accepted(message=NEWSLETTER_THANKS)
+
     existing = db.scalar(select(NewsletterSubscriber).where(NewsletterSubscriber.email == email))
     if existing is None:
         db.add(NewsletterSubscriber(email=email, source_page=payload.source_page, ip_address=client_ip(request)))

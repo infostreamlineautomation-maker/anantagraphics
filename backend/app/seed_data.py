@@ -17,7 +17,7 @@ SETTINGS = {
         "tagline": "Ideas with passion and purpose",
     },
     "contact": {
-        "phone": "773-365-1240",
+        "phone": "+91 773-365-1240",
         "email": "office@anantagraphics.com",
         "address": "LG-04, Hiral Arcade, Opp. New Court, Athwalines, Surat 395 007, Gujarat, India",
         "map_url": "https://www.google.com/maps/search/?api=1&query=Hiral+Arcade+Athwalines+Surat",

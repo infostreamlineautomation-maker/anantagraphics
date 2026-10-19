@@ -17,8 +17,10 @@ class EnquiryCreate(BaseModel):
     service_id: int | None = None
     message: str | None = Field(default=None, max_length=5000)
     source_page: str | None = Field(default=None, max_length=300)
-    # Honeypot: hidden on the website form; bots that fill it are silently dropped
+    # Honeypots & spam detection metadata: bots that fill honeypots or submit instantaneously are dropped
     website: str | None = Field(default=None, max_length=200)
+    user_company_url: str | None = Field(default=None, max_length=200)
+    elapsed_ms: int | None = Field(default=None, ge=0)
 
 
 class Accepted(BaseModel):
@@ -54,6 +56,7 @@ class NewsletterCreate(BaseModel):
     email: EmailStr
     source_page: str | None = Field(default=None, max_length=300)
     website: str | None = Field(default=None, max_length=200)  # honeypot
+    user_company_url: str | None = Field(default=None, max_length=200)  # honeypot 2
 
 
 class SubscriberAdmin(BaseModel):
