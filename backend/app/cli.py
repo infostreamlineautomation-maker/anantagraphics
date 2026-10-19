@@ -54,6 +54,10 @@ def init_env(prod: bool) -> None:
         text = _env_set(text, "REVALIDATE_SECRET", secrets.token_urlsafe(32))
     if prod:
         text = _env_set(text, "APP_ENV", "production")
+        # In production the website runs on port 3100 (deploy/ecosystem.config.js), not dev's 3000. With the
+        # dev URL left in place, CMS edits (e.g. social links) never refreshed the live site's cache.
+        if _env_get(text, "REVALIDATE_URL") in (None, "", "http://127.0.0.1:3000/api/revalidate"):
+            text = _env_set(text, "REVALIDATE_URL", "http://127.0.0.1:3100/api/revalidate")
     backend_env.write_text(text, encoding="utf-8")
     revalidate_secret = _env_get(text, "REVALIDATE_SECRET")
 

@@ -22,6 +22,17 @@ type FieldDef = {
 };
 
 const httpsUrl = (v: string) => (!v || /^https:\/\/[^\s]+$/.test(v) ? null : "Must be a full https:// link");
+// A bare "https://www.instagram.com/" sends visitors to Instagram's home page, not to Ananta Graphics
+const profileUrl = (v: string) => {
+  const invalid = httpsUrl(v);
+  if (invalid || !v) return invalid;
+  try {
+    return new URL(v).pathname.replace(/\/+$/, "") ? null : "Link to your own page, e.g. https://www.instagram.com/yourpage";
+  } catch {
+    return "Must be a full https:// link";
+  }
+};
+const phoneNumber = (v: string) => (!v || v.replace(/\D/g, "").length >= 10 ? null : "Enter the full number, e.g. +91 98765 43210");
 
 const GROUPS: { key: keyof Settings; title: string; description: string; fields: FieldDef[] }[] = [
   {
@@ -40,28 +51,34 @@ const GROUPS: { key: keyof Settings; title: string; description: string; fields:
     title: "Contact details",
     description: "Shown in the footer, the Get In Touch card, the Contact page and the phone menu.",
     fields: [
-      { key: "phone", label: "Phone", kind: "tel", placeholder: "+91 98765 43210" },
+      {
+        key: "phone",
+        label: "Phone",
+        kind: "tel",
+        placeholder: "+91 98765 43210",
+        hint: "A 10-digit Indian number is shown on the website as +91 98765 43210.",
+        validate: phoneNumber,
+      },
       { key: "email", label: "Email", kind: "email" },
       { key: "address", label: "Office address", kind: "textarea" },
-      { key: "map_url", label: "Address link", kind: "url", hint: "Opens when visitors tap the address (a Google Maps link).", validate: httpsUrl },
       {
-        key: "map_embed_url",
-        label: "Contact page map",
+        key: "map_url",
+        label: "Address link",
         kind: "url",
-        hint: "Google Maps → Share → Embed a map → copy only the src=\"…\" link. Leave empty to hide the map.",
-        validate: (v) => (!v || v.startsWith("https://www.google.com/maps") ? null : "Must start with https://www.google.com/maps"),
+        hint: "Opens when visitors tap the address (Google Maps → Share → Copy link).",
+        validate: httpsUrl,
       },
     ],
   },
   {
     key: "socials",
     title: "Social media",
-    description: "Icons only appear for networks with a link.",
+    description: "Shown in the footer, the phone menu, the Contact page and the Get In Touch card. Icons only appear for networks with a link.",
     fields: [
-      { key: "instagram", label: "Instagram", kind: "url", placeholder: "https://instagram.com/…", validate: httpsUrl },
-      { key: "facebook", label: "Facebook", kind: "url", placeholder: "https://facebook.com/…", validate: httpsUrl },
-      { key: "linkedin", label: "LinkedIn", kind: "url", placeholder: "https://linkedin.com/company/…", validate: httpsUrl },
-      { key: "youtube", label: "YouTube", kind: "url", placeholder: "https://youtube.com/@…", hint: "Shown on the Get In Touch card.", validate: httpsUrl },
+      { key: "instagram", label: "Instagram", kind: "url", placeholder: "https://www.instagram.com/yourpage", validate: profileUrl },
+      { key: "facebook", label: "Facebook", kind: "url", placeholder: "https://www.facebook.com/yourpage", validate: profileUrl },
+      { key: "linkedin", label: "LinkedIn", kind: "url", placeholder: "https://www.linkedin.com/company/yourpage", validate: profileUrl },
+      { key: "youtube", label: "YouTube", kind: "url", placeholder: "https://www.youtube.com/@yourchannel", validate: profileUrl },
     ],
   },
   {

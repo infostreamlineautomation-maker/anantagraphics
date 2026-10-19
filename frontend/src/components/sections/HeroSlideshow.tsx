@@ -47,17 +47,21 @@ export function HeroSlideshow({
   const [active, setActive] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  const touchStartX = useRef<number | null>(null);
 
   const total = slides.length;
   const hasMultiple = total > 1;
 
+  // The hero fills the first screen, so the mouse is usually resting on it: pausing on hover stopped the
+  // slideshow for most visitors. It only pauses while keyboard focus is on its controls. Depending on
+  // `active` restarts the timer after a manual change, so the next slide never follows a click instantly.
   useEffect(() => {
     if (!hasMultiple || isPaused) return;
-    const timer = setInterval(() => {
+    const timer = setTimeout(() => {
       setActive((prev) => (prev + 1) % total);
     }, autoPlayInterval);
-    return () => clearInterval(timer);
-  }, [hasMultiple, isPaused, total, autoPlayInterval]);
+    return () => clearTimeout(timer);
+  }, [active, hasMultiple, isPaused, total, autoPlayInterval]);
 
   useEffect(() => {
     videoRefs.current.forEach((video, idx) => {
@@ -84,8 +88,19 @@ export function HeroSlideshow({
   return (
     <section
       className="under-header group relative aspect-[1728/1117] max-h-[min(88svh,42rem)] min-h-[22rem] w-full overflow-hidden bg-panel md:min-h-[28rem]"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
+      onFocus={() => setIsPaused(true)}
+      onBlur={() => setIsPaused(false)}
+      onTouchStart={(e) => {
+        touchStartX.current = e.touches[0]?.clientX ?? null;
+      }}
+      onTouchEnd={(e) => {
+        const start = touchStartX.current;
+        touchStartX.current = null;
+        const end = e.changedTouches[0]?.clientX;
+        if (!hasMultiple || start === null || end === undefined || Math.abs(end - start) < 40) return;
+        if (end < start) next();
+        else prev();
+      }}
       aria-roledescription="carousel"
       aria-label="Hero Slideshow"
     >
@@ -136,36 +151,19 @@ export function HeroSlideshow({
         );
       })}
 
-      {/* Slide Caption - Bottom Right with AnimatePresence */}
-      <div className="absolute right-[6%] bottom-[6%] z-20 max-w-[65%] text-right font-caption text-h4 text-ink md:right-[12%] md:bottom-[7%] pointer-events-none">
-        <AnimatePresence mode="wait">
-          {currentSlide.caption && (
-            <motion.p
-              key={currentSlide.caption}
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="drop-shadow-xs"
-            >
-              {currentSlide.caption}
-            </motion.p>
-          )}
-        </AnimatePresence>
-      </div>
-
       {/* Navigation Controls (Dots & Arrows) when multiple slides exist */}
       {hasMultiple && (
         <>
           {/* Bottom-left Pill / Dot Indicators */}
-          <div className="absolute left-[6%] bottom-[6%] z-20 flex items-center gap-2 md:left-[12%] md:bottom-[7%]">
+          <div className="absolute bottom-2 left-1/2 z-20 flex -translate-x-1/2 items-center md:bottom-[7%] md:left-[12%] md:translate-x-0">
             {slides.map((_, i) => (
               <button
                 key={i}
                 type="button"
                 onClick={() => setActive(i)}
                 aria-label={`Go to slide ${i + 1}`}
-                className="relative h-2.5 flex items-center justify-center p-0.5"
+                aria-current={i === active ? "true" : undefined}
+                className="relative flex h-8 items-center justify-center px-1"
               >
                 <span
                   className={`block h-2 rounded-full transition-all duration-400 ${
@@ -185,7 +183,7 @@ export function HeroSlideshow({
                 aria-label="Previous slide"
                 whileHover={{ scale: 1.08 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex size-11 items-center justify-center rounded-full bg-surface/85 text-ink backdrop-blur-md opacity-0 transition-opacity duration-300 hover:bg-surface hover:text-brand group-hover:opacity-100 focus:opacity-100 shadow-md"
+                className="flex size-11 items-center justify-center rounded-full bg-surface/85 text-ink backdrop-blur-md opacity-0 transition-opacity duration-300 hover:bg-surface hover:text-brand group-hover:opacity-100 focus:opacity-100 shadow-md max-md:size-9 [@media(hover:none)]:opacity-100"
               >
                 <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -202,7 +200,7 @@ export function HeroSlideshow({
                 aria-label="Next slide"
                 whileHover={{ scale: 1.08 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex size-11 items-center justify-center rounded-full bg-surface/85 text-ink backdrop-blur-md opacity-0 transition-opacity duration-300 hover:bg-surface hover:text-brand group-hover:opacity-100 focus:opacity-100 shadow-md"
+                className="flex size-11 items-center justify-center rounded-full bg-surface/85 text-ink backdrop-blur-md opacity-0 transition-opacity duration-300 hover:bg-surface hover:text-brand group-hover:opacity-100 focus:opacity-100 shadow-md max-md:size-9 [@media(hover:none)]:opacity-100"
               >
                 <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

@@ -15,6 +15,7 @@ router = APIRouter(prefix="/audit-logs", tags=["audit"], dependencies=[Depends(r
 def list_audit_logs(
     entity: str | None = None,
     admin_id: int | None = None,
+    hide_logins: bool = False,  # sign-ins are frequent and bury the actual content changes
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=50, ge=1, le=200),
     db: Session = Depends(get_db),
@@ -22,6 +23,8 @@ def list_audit_logs(
     stmt = select(AuditLog)
     if entity:
         stmt = stmt.where(AuditLog.entity == entity)
+    elif hide_logins:
+        stmt = stmt.where(AuditLog.entity != "auth")
     if admin_id:
         stmt = stmt.where(AuditLog.admin_id == admin_id)
     total = db.scalar(select(func.count()).select_from(stmt.subquery())) or 0

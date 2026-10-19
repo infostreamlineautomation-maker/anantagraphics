@@ -28,32 +28,6 @@ def get_settings(db: Session = Depends(get_db)) -> dict[str, dict]:
     return {key: stored.get(key, {}) for key in SETTING_KEYS}
 
 
-@router.put("/{key}")
-def update_setting(
-    key: str,
-    payload: SettingUpdate,
-    request: Request,
-    background: BackgroundTasks,
-    db: Session = Depends(get_db),
-    admin: AdminUser = Depends(get_current_admin),
-) -> dict:
-    if key not in SETTING_KEYS:
-        raise HTTPException(404, f"Unknown setting '{key}'")
-    setting = db.get(SiteSetting, key)
-    before = dict(setting.value) if setting else {}
-    if setting is None:
-        setting = SiteSetting(key=key, value=payload.value)
-        db.add(setting)
-    else:
-        setting.value = payload.value
-    changes = diff(before, payload.value)
-    if changes:
-        audit.record(db, admin, "update", "settings", f"Updated {key} settings", key, changes, request)
-    db.commit()
-    background.add_task(revalidate_site, "settings")
-    return setting.value
-
-
 class TestEmail(BaseModel):
     to: EmailStr | None = None  # defaults to the signed-in admin's address
 
@@ -137,12 +111,48 @@ def send_test_email(
 @router.post("/publish")
 def publish_all(
     request: Request,
+    db: Session = Depends(get_db),
+    admin: AdminUser = Depends(get_current_admin),
+) -> dict:
+    """Refresh every cached page on the website (edits normally refresh their own pages).
+
+    Runs in the request, not in the background, so a misconfigured server shows up as an error in the CMS
+    instead of edits silently not reaching the website.
+    """
+    if not revalidate_site(*ALL_TAGS):
+        raise HTTPException(
+            502,
+            "The website could not be refreshed. On the server, check REVALIDATE_URL (production: "
+            "http://127.0.0.1:3100/api/revalidate) and REVALIDATE_SECRET in backend/.env, then restart.",
+        )
+    audit.record(db, admin, "publish", "site", "Refreshed the whole website", "all", request=request)
+    db.commit()
+    return {"ok": True}
+
+
+# Declared last: FastAPI matches routes in order, and this catch-all would otherwise swallow PUT /settings/email
+# (the CMS "Save SMTP Settings" button got a 422 "value: Field required" and nothing was saved).
+@router.put("/{key}")
+def update_setting(
+    key: str,
+    payload: SettingUpdate,
+    request: Request,
     background: BackgroundTasks,
     db: Session = Depends(get_db),
     admin: AdminUser = Depends(get_current_admin),
 ) -> dict:
-    """Refresh every cached page on the website (edits normally refresh their own pages)."""
-    audit.record(db, admin, "publish", "site", "Refreshed the whole website", "all", request=request)
+    if key not in SETTING_KEYS:
+        raise HTTPException(404, f"Unknown setting '{key}'")
+    setting = db.get(SiteSetting, key)
+    before = dict(setting.value) if setting else {}
+    if setting is None:
+        setting = SiteSetting(key=key, value=payload.value)
+        db.add(setting)
+    else:
+        setting.value = payload.value
+    changes = diff(before, payload.value)
+    if changes:
+        audit.record(db, admin, "update", "settings", f"Updated {key} settings", key, changes, request)
     db.commit()
-    background.add_task(revalidate_site, *ALL_TAGS)
-    return {"ok": True}
+    background.add_task(revalidate_site, "settings")
+    return setting.value

@@ -51,8 +51,37 @@ export default function UsersPage() {
       />
       {error && <ErrorBox message={error} onRetry={reload} />}
       {loading && !data && <Loading />}
+      {/* Phones: one card per user */}
       {data && (
-        <div className="overflow-x-auto rounded-card border border-line bg-white">
+        <ul className="space-y-3 sm:hidden">
+          {data.map((u) => (
+            <li key={u.id} className="rounded-card border border-line bg-white p-4 text-sm">
+              <p className="font-medium">
+                {u.full_name || u.email}
+                {u.id === admin.id && <span className="ml-2 text-xs font-normal text-muted">(you)</span>}
+              </p>
+              <p className="break-all text-xs text-muted">{u.email}</p>
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <Badge tone={u.role === "superadmin" ? "blue" : "grey"}>{ROLE_LABELS[u.role]}</Badge>
+                {!u.is_active && <Badge tone="red">Disabled</Badge>}
+              </div>
+              <p className="mt-2 text-xs text-muted">Last sign-in: {formatDate(u.last_login_at)}</p>
+              <div className="mt-3 flex gap-2">
+                <Button size="sm" variant="secondary" onClick={() => setEditing(u)}>
+                  Edit
+                </Button>
+                {u.id !== admin.id && (
+                  <Button size="sm" variant="ghost" onClick={() => remove(u)}>
+                    Delete
+                  </Button>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+      {data && (
+        <div className="hidden overflow-x-auto rounded-card border border-line bg-white sm:block">
           <table className="w-full min-w-[640px] text-left text-sm">
             <thead className="border-b border-line bg-cream text-xs tracking-wide text-muted uppercase">
               <tr>

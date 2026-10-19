@@ -88,14 +88,13 @@ export const COUNTRY_LIST = [
   { iso: "IE", code: "+353", name: "Ireland" },
 ];
 
+// Messages are kept short enough to fit on one line on a phone, so showing one never moves the form
 function validateName(value: string): string | undefined {
   const trimmed = value.trim();
   if (!trimmed) return "Please enter your full name.";
-  if (trimmed.length < 2) return "Name must be at least 2 characters.";
-  if (trimmed.length > 80) return "Name cannot exceed 80 characters.";
-  if (!/^[a-zA-Z\s.'-]+$/.test(trimmed)) {
-    return "Name can only contain letters, spaces, and standard punctuation.";
-  }
+  if (trimmed.length < 2) return "Enter at least 2 letters.";
+  if (trimmed.length > 80) return "Keep it under 80 characters.";
+  if (!/^[a-zA-Z\s.'-]+$/.test(trimmed)) return "Use letters only, please.";
   return undefined;
 }
 
@@ -103,16 +102,10 @@ function validatePhone(value: string, code: string): string | undefined {
   const digits = value.replace(/\D/g, "");
   if (!digits) return "Please enter your phone number.";
   if (code === "+91") {
-    if (digits.length !== 10) {
-      return `Phone number must be exactly 10 digits (${digits.length}/10 entered).`;
-    }
-    if (!/^[6-9]/.test(digits)) {
-      return "Please enter a valid Indian mobile number starting with 6, 7, 8, or 9.";
-    }
-  } else {
-    if (digits.length < 7 || digits.length > 15) {
-      return `Please enter a valid phone number (${digits.length} digits entered, expected 7-15).`;
-    }
+    if (digits.length !== 10) return `Enter all 10 digits (${digits.length}/10).`;
+    if (!/^[6-9]/.test(digits)) return "Mobile numbers start with 6, 7, 8 or 9.";
+  } else if (digits.length < 7 || digits.length > 15) {
+    return "Enter 7 to 15 digits.";
   }
   return undefined;
 }
@@ -121,48 +114,38 @@ function validateEmail(value: string): string | undefined {
   const trimmed = value.trim();
   if (!trimmed) return "Please enter your email address.";
   const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
-  if (!emailRegex.test(trimmed)) {
-    return "Please enter a valid email address (e.g. name@company.com).";
-  }
+  if (!emailRegex.test(trimmed)) return "Enter a valid email, e.g. name@company.com";
   const domain = trimmed.split("@")[1]?.toLowerCase() || "";
-  if (DISPOSABLE_EMAIL_DOMAINS.has(domain)) {
-    return "Please use a permanent business or personal email address.";
-  }
+  if (DISPOSABLE_EMAIL_DOMAINS.has(domain)) return "Please use a permanent email address.";
   return undefined;
 }
 
 function validateMessage(value: string, type: "contact" | "quote"): string | undefined {
   const trimmed = value.trim();
-  if (!trimmed) {
-    return type === "quote"
-      ? "Please share details about your requirement (quantity, sizes, timeline...)."
-      : "Please enter your message.";
-  }
-  if (trimmed.length < 10) {
-    return "Please enter at least 10 characters so we can understand your project.";
-  }
-  if (trimmed.length > 3000) {
-    return "Message cannot exceed 3,000 characters.";
-  }
+  if (!trimmed) return type === "quote" ? "Please describe what you need." : "Please enter your message.";
+  if (trimmed.length < 10) return "Please write at least 10 characters.";
+  if (trimmed.length > 3000) return "Keep it under 3,000 characters.";
   const urls = (trimmed.match(/https?:\/\/|www\./gi) || []).length;
-  if (urls > 1) {
-    return "To prevent spam, multiple links or URLs are not permitted.";
-  }
+  if (urls > 1) return "Please include at most one link.";
   return undefined;
 }
 
+/** Always takes one line of space, so a message appearing doesn't push the rest of the form down. */
 function FieldError({ error }: { error?: string }) {
-  if (!error) return null;
   return (
-    <p role="alert" className="mt-1 flex items-center gap-1 font-sans text-xs font-medium text-brand">
-      <svg className="size-3.5 shrink-0" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-        <path
-          fillRule="evenodd"
-          d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0-10a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 8 5zm0 8a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"
-          clipRule="evenodd"
-        />
-      </svg>
-      <span>{error}</span>
+    <p role="alert" className="mt-1 flex min-h-[1.125rem] items-start gap-1 font-sans text-xs leading-[1.125rem] font-medium text-brand">
+      {error && (
+        <>
+          <svg className="mt-0.5 size-3.5 shrink-0" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path
+              fillRule="evenodd"
+              d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0-10a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 8 5zm0 8a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"
+              clipRule="evenodd"
+            />
+          </svg>
+          <span>{error}</span>
+        </>
+      )}
     </p>
   );
 }
@@ -338,7 +321,7 @@ export function ContactForm({ services, submitLabel = "Send Message", type = "co
       : "border-line focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/10";
 
   return (
-    <form onSubmit={onSubmit} noValidate className="grid gap-x-4 gap-y-4 sm:grid-cols-2">
+    <form onSubmit={onSubmit} noValidate className="grid gap-x-4 gap-y-2 sm:grid-cols-2">
       {/* Full Name */}
       <label className={LABEL}>
         <span className="flex items-center justify-between">
@@ -485,6 +468,8 @@ export function ContactForm({ services, submitLabel = "Send Message", type = "co
             </option>
           ))}
         </select>
+        {/* empty line keeps this field aligned with Email beside it */}
+        <FieldError />
       </label>
 
       {/* Your Message */}

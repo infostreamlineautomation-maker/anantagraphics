@@ -62,7 +62,7 @@ export function DropZone({ onUploaded, multiple = true }: { onUploaded: (media: 
               browse
             </button>
           </p>
-          <p className="text-xs text-muted">JPG, PNG, WebP or GIF · up to {MAX_MB} MB each</p>
+          <p className="text-xs text-muted">JPG, PNG, WebP, AVIF or GIF images, or MP4 / WebM videos · up to {MAX_MB} MB each</p>
         </>
       )}
       <input ref={input} type="file" accept={ACCEPT} multiple={multiple} hidden onChange={(e) => void handle(e.target.files)} />

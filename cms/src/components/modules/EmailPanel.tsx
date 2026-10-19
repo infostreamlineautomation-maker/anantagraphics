@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { Field, Input, Toggle } from "@/components/ui/Form";
@@ -41,19 +41,19 @@ export function EmailPanel() {
   const [result, setResult] = useState<{ ok: boolean; message: string } | null>(null);
   const toast = useToast();
 
-  useEffect(() => {
-    if (data) {
-      setHost(data.host || "");
-      setPort(data.port || 465);
-      setSsl(data.ssl ?? true);
-      setUser(data.user || "");
-      setFromEmail(data.from_email || "");
-      setNotifyTo(data.notify_to || "");
-      if (!testTo && admin?.email) {
-        setTestTo(admin.email);
-      }
-    }
-  }, [data, admin]);
+  // Fill the form whenever fresh settings arrive (first load, after saving). Done during render rather
+  // than in an effect, so the form never shows one empty frame first.
+  const [loaded, setLoaded] = useState<EmailStatus | null>(null);
+  if (data && data !== loaded) {
+    setLoaded(data);
+    setHost(data.host || "");
+    setPort(data.port || 465);
+    setSsl(data.ssl ?? true);
+    setUser(data.user || "");
+    setFromEmail(data.from_email || "");
+    setNotifyTo(data.notify_to || "");
+  }
+  if (!testTo && admin?.email && data && !loaded) setTestTo(admin.email);
 
   async function saveSettings(e: React.FormEvent) {
     e.preventDefault();

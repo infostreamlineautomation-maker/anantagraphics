@@ -12,6 +12,7 @@ import { adminFetch } from "@/lib/api";
 import { errorMessage, formatDate, useResource, useUnsavedChanges } from "@/lib/hooks";
 import type { Enquiry, EnquiryStatus } from "@/lib/types";
 
+import { replyHref } from "./EnquiryList";
 import { ENQUIRY_STATUS_LABELS, ENQUIRY_TYPE_LABELS, EnquiryStatusBadge } from "./enquiryLabels";
 
 import { SITE_URL } from "@/lib/media";
@@ -44,8 +45,6 @@ function EnquiryView({ enquiry }: { enquiry: Enquiry }) {
   const dirty = status !== current.status || notes !== (current.notes ?? "");
   useUnsavedChanges(dirty);
 
-  const subject = `Re: your ${ENQUIRY_TYPE_LABELS[current.type].toLowerCase()} — Ananta Graphics`;
-  const replyHref = `mailto:${current.email}?subject=${encodeURIComponent(subject)}`;
 
   async function save() {
     setSaving(true);
@@ -89,7 +88,7 @@ function EnquiryView({ enquiry }: { enquiry: Enquiry }) {
         back={{ href: "/enquiries", label: "Enquiries" }}
         actions={
           <>
-            <a href={replyHref} className={buttonClass("secondary")}>
+            <a href={replyHref(current)} className={buttonClass("secondary")}>
               Reply by email
             </a>
             {current.phone && (

@@ -12,7 +12,6 @@ export type Settings = {
     email: string;
     address: string;
     map_url: string;
-    map_embed_url?: string;
   };
   socials: Partial<Record<SocialKey, string>>;
   footer: {

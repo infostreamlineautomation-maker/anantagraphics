@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 
-import { CookieSettings } from "@/components/consent/CookieSettings";
 import { LegalPage } from "@/components/ui/LegalPage";
 
 export const metadata: Metadata = { title: "Cookie Policy", alternates: { canonical: "/cookies" } };
@@ -11,15 +10,12 @@ export default function CookiesPage() {
       <p>
         This website doesn’t use advertising or tracking cookies, and we don’t share your browsing with anyone.
       </p>
-      <h2>Embedded maps</h2>
+      <h2>Maps and social links</h2>
       <p>
-        The contact page can show a Google Map. Google may set its own cookies when the map loads, so the map only
-        appears after you choose to show it. You can change that choice below at any time.
+        Our address and social media icons link to Google Maps, Instagram, Facebook, LinkedIn and YouTube. Those sites
+        open in a new tab and follow their own cookie policies; nothing from them is loaded on this website until you
+        click.
       </p>
-      <h2 id="settings" className="scroll-mt-8">
-        Cookie settings
-      </h2>
-      <CookieSettings />
     </LegalPage>
   );
 }

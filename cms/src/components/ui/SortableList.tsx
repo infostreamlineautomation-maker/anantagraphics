@@ -17,17 +17,22 @@ export function move<T>(list: T[], from: number, to: number): T[] {
   return next;
 }
 
-/** Reorderable list: drag the handle, or use the ↑ ↓ buttons (keyboard friendly). */
+/**
+ * Reorderable list: drag the ⋮⋮ handle with a mouse, or use the ▲ ▼ buttons (keyboard and phone friendly).
+ * Rows only become draggable while the handle is held: a whole-row `draggable` swallowed touch scrolling,
+ * so long lists couldn't be scrolled on phones.
+ */
 export function SortableList<T>({ items, getKey, onReorder, renderItem, disabled }: Props<T>) {
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [overIndex, setOverIndex] = useState<number | null>(null);
+  const [armed, setArmed] = useState<number | null>(null);
 
   return (
     <ul className="flex flex-col gap-2">
       {items.map((item, i) => (
         <li
           key={getKey(item)}
-          draggable={!disabled}
+          draggable={!disabled && armed === i}
           onDragStart={(e) => {
             setDragIndex(i);
             e.dataTransfer.effectAllowed = "move";
@@ -46,25 +51,32 @@ export function SortableList<T>({ items, getKey, onReorder, renderItem, disabled
           onDragEnd={() => {
             setDragIndex(null);
             setOverIndex(null);
+            setArmed(null);
           }}
-          className={`flex items-center gap-3 rounded-card border bg-white p-3 transition-colors ${
+          className={`flex items-center gap-2 rounded-card border bg-white p-3 transition-colors sm:gap-3 ${
             overIndex === i && dragIndex !== i ? "border-brand" : "border-line"
           } ${dragIndex === i ? "opacity-50" : ""}`}
         >
           {!disabled && (
-            <span className="cursor-grab text-lg text-muted select-none" aria-hidden title="Drag to reorder">
+            <span
+              onPointerDown={(e) => e.pointerType === "mouse" && setArmed(i)}
+              onPointerUp={() => setArmed(null)}
+              className="hidden cursor-grab text-lg text-muted select-none sm:inline"
+              aria-hidden
+              title="Drag to reorder"
+            >
               ⋮⋮
             </span>
           )}
           <div className="min-w-0 flex-1">{renderItem(item, i)}</div>
           {!disabled && (
-            <div className="flex flex-col">
+            <div className="flex shrink-0 flex-col">
               <button
                 type="button"
                 aria-label="Move up"
                 disabled={i === 0}
                 onClick={() => onReorder(move(items, i, i - 1))}
-                className="px-1.5 text-xs text-muted hover:text-brand disabled:opacity-30"
+                className="px-2 py-1 text-xs text-muted hover:text-brand disabled:opacity-30"
               >
                 ▲
               </button>
@@ -73,7 +85,7 @@ export function SortableList<T>({ items, getKey, onReorder, renderItem, disabled
                 aria-label="Move down"
                 disabled={i === items.length - 1}
                 onClick={() => onReorder(move(items, i, i + 1))}
-                className="px-1.5 text-xs text-muted hover:text-brand disabled:opacity-30"
+                className="px-2 py-1 text-xs text-muted hover:text-brand disabled:opacity-30"
               >
                 ▼
               </button>

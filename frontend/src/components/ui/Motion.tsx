@@ -139,8 +139,9 @@ export function Magnetic({
   const ref = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current) return;
+  // Mouse only: on touch screens a tap would leave the element pulled off-centre (no "leave" follows)
+  const handleMouseMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!ref.current || e.pointerType !== "mouse") return;
     const { clientX, clientY } = e;
     const { left, top, width, height } = ref.current.getBoundingClientRect();
     const centerX = left + width / 2;
@@ -158,50 +159,13 @@ export function Magnetic({
   return (
     <motion.div
       ref={ref}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      onPointerMove={handleMouseMove}
+      onPointerLeave={handleMouseLeave}
       animate={{ x: position.x, y: position.y }}
       transition={{ type: "spring", stiffness: 180, damping: 15, mass: 0.1 }}
       className={`inline-block ${className}`}
     >
       {children}
     </motion.div>
-  );
-}
-
-/**
- * Editorial headline reveal: splits words and slides them up from behind an overflow-hidden mask.
- */
-export function TextReveal({
-  text,
-  className = "",
-  delay = 0,
-}: {
-  text: string;
-  className?: string;
-  delay?: number;
-}) {
-  const words = text.split(" ");
-
-  return (
-    <span className={`inline-flex flex-wrap ${className}`}>
-      {words.map((word, i) => (
-        <span key={`${word}-${i}`} className="inline-block overflow-hidden mr-[0.25em] last:mr-0">
-          <motion.span
-            initial={{ y: "110%", opacity: 0 }}
-            whileInView={{ y: "0%", opacity: 1 }}
-            viewport={{ once: true, margin: "-40px" }}
-            transition={{
-              duration: 0.75,
-              delay: delay + i * 0.04,
-              ease: [0.16, 1, 0.3, 1] as const,
-            }}
-            className="inline-block"
-          >
-            {word}
-          </motion.span>
-        </span>
-      ))}
-    </span>
   );
 }

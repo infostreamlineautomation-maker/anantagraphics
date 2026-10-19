@@ -19,6 +19,7 @@ ALLOWED_FORMATS = {
     "PNG": (".png", "image/png"),
     "WEBP": (".webp", "image/webp"),
     "GIF": (".gif", "image/gif"),
+    "AVIF": (".webp", "image/webp"),  # accepted, but stored as WebP (re-encoded below)
 }
 
 ALLOWED_VIDEOS = {
@@ -84,7 +85,7 @@ def store_image(upload: UploadFile, folder: str = "library") -> StoredFile:
 
     fmt = img.format or ""
     if fmt not in ALLOWED_FORMATS:
-        raise HTTPException(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE, "Use a JPG, PNG, WebP, GIF image or MP4/WebM video")
+        raise HTTPException(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE, "Use a JPG, PNG, WebP, AVIF, GIF image or MP4/WebM video")
     ext, mime = ALLOWED_FORMATS[fmt]
 
     if fmt == "GIF":

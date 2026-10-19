@@ -21,7 +21,6 @@ SETTINGS = {
         "email": "office@anantagraphics.com",
         "address": "LG-04, Hiral Arcade, Opp. New Court, Athwalines, Surat 395 007, Gujarat, India",
         "map_url": "https://www.google.com/maps/search/?api=1&query=Hiral+Arcade+Athwalines+Surat",
-        "map_embed_url": "https://www.google.com/maps?q=Hiral+Arcade,+Athwalines,+Surat,+Gujarat&output=embed",
     },
     "socials": {
         "instagram": "https://www.instagram.com/",

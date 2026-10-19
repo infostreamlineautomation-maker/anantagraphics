@@ -35,7 +35,7 @@ The first run creates the env files; edit them, then run setup again so it can c
 
 | File                  | Set |
 |-----------------------|-----|
-| `backend/.env`        | `DATABASE_URL=postgresql+psycopg://ananta:strong-password@localhost:5432/ananta_graphics`, `CORS_ORIGINS=https://example.com,https://www.example.com`, `ADMIN_CORS_ORIGINS=https://admin.example.com`, `SITE_URL=https://example.com`, `CMS_URL=https://admin.example.com`, `REVALIDATE_URL=http://127.0.0.1:3100/api/revalidate`. (SMTP is optional; can be set up in CMS). |
+| `backend/.env`        | `DATABASE_URL=postgresql+psycopg://ananta:strong-password@localhost:5432/ananta_graphics`, `CORS_ORIGINS=https://example.com,https://www.example.com`, `ADMIN_CORS_ORIGINS=https://admin.example.com`, `SITE_URL=https://example.com`, `CMS_URL=https://admin.example.com`, `REVALIDATE_URL=http://127.0.0.1:3100/api/revalidate` (`setup.sh --prod` sets this; with the dev value `:3000` CMS edits don't reach the live site, and the CMS "Refresh website" button reports an error). (SMTP is optional; can be set up in CMS). |
 | `frontend/.env.local` | `NEXT_PUBLIC_SITE_URL=https://example.com`, `NEXT_PUBLIC_API_URL=https://api.example.com`, `API_INTERNAL_URL=http://127.0.0.1:8100` |
 | `cms/.env.local`      | `NEXT_PUBLIC_SITE_URL=https://example.com`, `NEXT_PUBLIC_ADMIN_API_URL=https://admin-api.example.com` |
 

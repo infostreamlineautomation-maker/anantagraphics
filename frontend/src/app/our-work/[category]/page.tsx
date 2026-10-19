@@ -41,23 +41,26 @@ export default async function WorkCategoryPage({ params }: PageProps<"/our-work/
     <section className="container-site pt-4 pb-14 md:pb-20">
       <SectionHeading as="h1" eyebrow="Our Works" title={c.heading || c.name} lead={c.intro ?? undefined} />
       {c.projects.length > 0 ? (
-        <div className="w-full mt-8 grid gap-x-6 gap-y-10 sm:grid-cols-2 md:mt-12 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-12">
+        // Wrapping row rather than a grid: a category with only 1–2 projects is centred instead of
+        // leaving the right of the page empty
+        <div className="mt-8 flex w-full flex-wrap justify-center gap-x-6 gap-y-10 md:mt-12 lg:gap-x-8 lg:gap-y-12">
           {c.projects.map((p, i) => (
-            <WorkCard
-              key={p.id}
-              variant="project"
-              number={pad(i + 1)}
-              title={p.title}
-              text={p.short_description ?? undefined}
-              image={p.cover_image}
-              href={`/our-work/${c.slug}/${p.slug}`}
-              cta="View Project"
-              preload={i === 0}
-              index={i}
-              secondary_image={p.secondary_image}
-              craft_tags={p.craft_tags}
-              color_palette={p.color_palette}
-            />
+            <div key={p.id} className="w-full max-w-md sm:w-[calc(50%-0.75rem)] lg:w-[calc((100%-4rem)/3)]">
+              <WorkCard
+                variant="project"
+                number={pad(i + 1)}
+                title={p.title}
+                text={p.short_description ?? undefined}
+                image={p.cover_image}
+                href={`/our-work/${c.slug}/${p.slug}`}
+                cta="View Project"
+                preload={i === 0}
+                index={i}
+                secondary_image={p.secondary_image}
+                craft_tags={p.craft_tags}
+                color_palette={p.color_palette}
+              />
+            </div>
           ))}
         </div>
       ) : (

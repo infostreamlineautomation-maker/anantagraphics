@@ -3,16 +3,18 @@
 
 :root {
   /* Height reserved for the floating pill header; hero sections slide under it (under-header) */
-  --header-h: 5.5rem;
+  --header-h: 5.25rem;
 }
 @media (width >= 48rem) {
   :root {
-    --header-h: 6.75rem;
+    --header-h: 6.5rem;
   }
 }
 
 html {
   scroll-behavior: smooth;
+  /* the header stays pinned, so in-page links (#contact-form) stop below it */
+  scroll-padding-top: var(--header-h);
 }
 
 body {
@@ -67,8 +69,11 @@ body {
 .marquee-track {
   animation: marquee var(--marquee-duration, 40s) linear infinite;
 }
-.marquee:hover .marquee-track {
-  animation-play-state: paused;
+/* Pause-on-hover only where there's a real mouse: on phones a tap leaves :hover stuck and froze the strip */
+@media (hover: hover) {
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
 }
 
 /* Showcase vertical infinite reel animation (scroll down like user diagram) */
@@ -100,37 +105,17 @@ body {
   will-change: transform;
 }
 
-.showcase-reel:hover .showcase-reel-down,
-.showcase-reel:hover .showcase-reel-up {
-  animation-play-state: paused;
-}
-
-/* Featured work horizontal continuous animation */
-@keyframes featuredDrift {
-  0% {
-    transform: translateX(0%);
+@media (hover: hover) {
+  .showcase-reel:hover .showcase-reel-down,
+  .showcase-reel:hover .showcase-reel-up {
+    animation-play-state: paused;
   }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-.featured-drift-track {
-  display: flex;
-  width: max-content;
-  animation: featuredDrift var(--featured-duration, 38s) linear infinite;
-  will-change: transform;
-}
-
-.featured-strip-wrapper:hover .featured-drift-track {
-  animation-play-state: paused;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .marquee-track,
   .showcase-reel-down,
-  .showcase-reel-up,
-  .featured-drift-track {
+  .showcase-reel-up {
     animation: none;
   }
 }

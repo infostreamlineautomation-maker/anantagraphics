@@ -55,26 +55,31 @@ export default function WorkCategoriesPage() {
           getKey={(c) => c.id}
           onReorder={reorder}
           renderItem={(c, i) => (
-            <div className="flex flex-wrap items-center gap-4">
-              <div className="relative h-16 w-14 shrink-0 overflow-hidden rounded-card bg-cream">
-                {c.card_image && <Image src={mediaUrl(c.card_image)} alt="" fill sizes="56px" className="object-cover" />}
+            // Phones: image + name on one line, controls wrap below; wider screens: one row
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+              <div className="flex min-w-0 basis-full items-center gap-3 sm:basis-0 sm:flex-1 sm:gap-4">
+                <div className="relative h-16 w-14 shrink-0 overflow-hidden rounded-card bg-cream">
+                  {c.card_image && <Image src={mediaUrl(c.card_image)} alt="" fill sizes="56px" className="object-cover" />}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <Link href={`/work-categories/${c.id}`} className="font-medium hover:text-brand">
+                    {String(i + 1).padStart(2, "0")} — {c.name}
+                  </Link>
+                  <p className="truncate text-sm text-muted">
+                    /our-work/{c.slug} · {c.project_count} project{c.project_count === 1 ? "" : "s"}
+                  </p>
+                </div>
               </div>
-              <div className="min-w-0 flex-1">
-                <Link href={`/work-categories/${c.id}`} className="font-medium hover:text-brand">
-                  {String(i + 1).padStart(2, "0")} — {c.name}
-                </Link>
-                <p className="truncate text-sm text-muted">
-                  /our-work/{c.slug} · {c.project_count} project{c.project_count === 1 ? "" : "s"}
-                </p>
+              <div className="flex flex-wrap items-center gap-3">
+                {!c.is_active && <Badge>Hidden</Badge>}
+                <Toggle checked={c.is_active} onChange={(v) => setActive(c, v)} label="Visible" />
+                <LinkButton href={`/projects?category=${c.id}`} variant="ghost" size="sm">
+                  Projects
+                </LinkButton>
+                <LinkButton href={`/work-categories/${c.id}`} variant="secondary" size="sm">
+                  Edit
+                </LinkButton>
               </div>
-              {!c.is_active && <Badge>Hidden</Badge>}
-              <Toggle checked={c.is_active} onChange={(v) => setActive(c, v)} label="Visible" />
-              <LinkButton href={`/projects?category=${c.id}`} variant="ghost" size="sm">
-                Projects
-              </LinkButton>
-              <LinkButton href={`/work-categories/${c.id}`} variant="secondary" size="sm">
-                Edit
-              </LinkButton>
             </div>
           )}
         />

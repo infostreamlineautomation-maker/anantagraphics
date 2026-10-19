@@ -114,11 +114,10 @@ export function WorkCard({
       {/* 3D Flip Card Container */}
       <div
         className="relative block aspect-[6/7] [perspective:1200px]"
-        onMouseEnter={() => setIsFlipped(true)}
-        onMouseLeave={() => setIsFlipped(false)}
+        // Flip on mouse hover only: on phones a tap should simply open the work, not flip the card
+        onPointerEnter={(e) => e.pointerType === "mouse" && setIsFlipped(true)}
+        onPointerLeave={() => setIsFlipped(false)}
         onMouseMove={handleMouseMove}
-        onFocus={() => setIsFlipped(true)}
-        onBlur={() => setIsFlipped(false)}
       >
         <Link
           href={href}
@@ -196,42 +195,11 @@ export function WorkCard({
               <div className="absolute bottom-2.5 left-2.5 size-2 border-b-2 border-l-2 border-white/50 z-20 pointer-events-none" />
               <div className="absolute bottom-2.5 right-2.5 size-2 border-b-2 border-r-2 border-white/50 z-20 pointer-events-none" />
 
-              {/* Header: Photo 2 / Detail badge & Flip-Back button */}
-              <div className="relative z-20 flex items-center justify-between p-4 md:p-5">
-                <div className="flex items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1 text-[0.625rem] font-mono tracking-wider text-white border border-white/20 backdrop-blur-md shadow-sm">
-                  <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="font-semibold">№ {number || "01"} · ALTERNATE VIEW</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setIsFlipped(false);
-                  }}
-                  className="group/flip flex items-center gap-1 rounded-full bg-black/60 hover:bg-black/85 px-2.5 py-1 text-[0.625rem] font-mono tracking-wider text-rose-100 hover:text-white transition-all border border-white/20 backdrop-blur-md shadow-sm"
-                  title="Flip back to front photo"
-                >
-                  <span className="text-xs transition-transform duration-300 group-hover/flip:-rotate-180">↻</span>
-                  <span>PHOTO 1</span>
-                </button>
-              </div>
-
-              {/* Bottom: Title & Vibrant CTA Button */}
-              <div className="relative z-20 p-5 md:p-6 flex items-end justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="font-mono text-[0.625rem] uppercase tracking-wider text-rose-200/90 drop-shadow-sm">
-                    {isCategory ? "Category Showcase" : "Project Showcase"}
-                  </p>
-                  <p className="font-display text-h4 font-bold text-white tracking-tight leading-snug drop-shadow-md truncate">
-                    {title}
-                  </p>
-                </div>
-
-                <span className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-brand text-white font-sans text-xs font-bold px-4 py-2 shadow-lg transition-all duration-300 group-hover/card:bg-brand-bright group-hover/card:scale-105 border border-white/20">
-                  <span>{cta}</span>
-                  <span className="transition-transform duration-300 group-hover/card:translate-x-1">→</span>
-                </span>
+              {/* Title only: the single "View Work" button sits under the card */}
+              <div className="relative z-20 mt-auto p-5 md:p-6">
+                <p className="font-display text-h4 font-bold text-white tracking-tight leading-snug drop-shadow-md truncate">
+                  {title}
+                </p>
               </div>
             </div>
           </motion.div>

@@ -27,24 +27,31 @@ export function ServiceCarousel({ items, ctaLabel = "Our Services" }: { items: S
   const [active, setActive] = useState(0);
   const trackRef = useRef<HTMLDivElement>(null);
 
-  const scroll = (direction: "left" | "right") => {
-    if (!trackRef.current) return;
-    const amount = direction === "left" ? -400 : 400;
-    trackRef.current.scrollBy({ left: amount, behavior: "smooth" });
+  // Arrows step to the previous / next service and open it, so they work the same on phones and desktop
+  const go = (index: number) => {
+    const i = Math.max(0, Math.min(items.length - 1, index));
+    setActive(i);
+    // Wait for the card to widen, then bring it into view
+    window.setTimeout(() => {
+      const card = trackRef.current?.querySelectorAll("li")[i];
+      card?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
+    }, 60);
   };
+  const scroll = (direction: "left" | "right") => go(active + (direction === "left" ? -1 : 1));
 
   return (
     <div className="relative w-full">
-      {/* Top Carousel Navigation Arrows with Magnetic hover */}
-      <div className="mb-3 hidden md:flex items-center justify-end gap-2 pr-2">
+      {/* Carousel Navigation Arrows with Magnetic hover */}
+      <div className={`mb-3 items-center justify-end gap-2 pr-2 ${items.length > 1 ? "flex" : "hidden"}`}>
         <Magnetic strength={0.3}>
           <motion.button
             type="button"
             onClick={() => scroll("left")}
-            aria-label="Scroll services left"
+            disabled={active === 0}
+            aria-label="Previous service"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            className="flex size-9 items-center justify-center rounded-full border border-line bg-surface text-ink transition-colors hover:bg-panel hover:text-brand shadow-xs"
+            className="disabled:opacity-35 flex size-9 items-center justify-center rounded-full border border-line bg-surface text-ink transition-colors hover:bg-panel hover:text-brand shadow-xs"
           >
             <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -55,10 +62,11 @@ export function ServiceCarousel({ items, ctaLabel = "Our Services" }: { items: S
           <motion.button
             type="button"
             onClick={() => scroll("right")}
-            aria-label="Scroll services right"
+            disabled={active === items.length - 1}
+            aria-label="Next service"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            className="flex size-9 items-center justify-center rounded-full border border-line bg-surface text-ink transition-colors hover:bg-panel hover:text-brand shadow-xs"
+            className="disabled:opacity-35 flex size-9 items-center justify-center rounded-full border border-line bg-surface text-ink transition-colors hover:bg-panel hover:text-brand shadow-xs"
           >
             <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -70,7 +78,7 @@ export function ServiceCarousel({ items, ctaLabel = "Our Services" }: { items: S
       {/* Horizontal Carousel Track */}
       <div
         ref={trackRef}
-        className="-mx-4 overflow-x-auto px-4 pb-4 pt-1 [scrollbar-width:none] md:mx-0 md:px-0"
+        className="-mx-4 snap-x snap-mandatory scroll-px-4 overflow-x-auto px-4 pb-4 pt-1 [scrollbar-width:none] md:mx-0 md:scroll-px-0 md:px-0"
       >
         <ul className="flex h-[23rem] md:h-[25rem] lg:h-[26.5rem] w-max gap-4 md:gap-5 lg:gap-6 items-stretch">
           {items.map((item, i) => {
@@ -78,8 +86,11 @@ export function ServiceCarousel({ items, ctaLabel = "Our Services" }: { items: S
             return (
               <li
                 key={item.title}
-                onMouseEnter={() => setActive(i)}
-                className={`relative shrink-0 overflow-hidden rounded-[24px] md:rounded-[30px] transition-[width,background-color] duration-500 ease-out shadow-sm ${
+                onPointerEnter={(e) => {
+                  // Expand on hover with a mouse only; on touch screens a tap opens the card (below)
+                  if (e.pointerType === "mouse") setActive(i);
+                }}
+                className={`relative shrink-0 snap-start overflow-hidden rounded-[24px] md:rounded-[30px] transition-[width,background-color] duration-500 ease-out shadow-sm ${
                   open
                     ? "w-[min(88vw,42rem)] md:w-[41rem] lg:w-[44rem] bg-brand-bright shadow-lg"
                     : "w-[min(68vw,20rem)] md:w-[21.5rem] lg:w-[23rem] bg-panel hover:shadow-md"
@@ -117,7 +128,7 @@ export function ServiceCarousel({ items, ctaLabel = "Our Services" }: { items: S
                 ) : (
                   <button
                     type="button"
-                    onClick={() => setActive(i)}
+                    onClick={() => go(i)}
                     aria-label={`Show ${item.title}`}
                     className="group absolute inset-0 block text-left"
                   >

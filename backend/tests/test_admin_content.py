@@ -57,7 +57,7 @@ def test_sortable_lists(admin_client):
     assert admin_client.get(f"/faqs/{ids[1]}").status_code == 404
 
 
-def test_pages_and_settings(admin_client, public_client, seeded):
+def test_pages_and_settings(admin_client, public_client, seeded, monkeypatch):
     hero = next(s for s in admin_client.get("/pages/home").json() if s["key"] == "hero")
     content = {**hero["content"], "caption": "New caption"}
     assert admin_client.patch(f"/pages/sections/{hero['id']}", json={"content": content}).status_code == 200
@@ -68,7 +68,16 @@ def test_pages_and_settings(admin_client, public_client, seeded):
     assert res.status_code == 200
     assert public_client.get("/settings").json()["contact"]["phone"] == "+91 99999 99999"
     assert admin_client.put("/settings/unknown", json={"value": {}}).status_code == 404
+
+    # "Refresh website" reports a server that can't reach the website instead of pretending it worked
+    from app.services import revalidate
+
+    assert admin_client.post("/settings/publish").status_code == 502  # tests run without REVALIDATE_SECRET
+    sent: list[tuple[str, ...]] = []
+    monkeypatch.setattr("app.routers.admin.settings.revalidate_site", lambda *tags: sent.append(tags) or True)
     assert admin_client.post("/settings/publish").json() == {"ok": True}
+    assert "settings" in sent[0]
+    assert revalidate.revalidate_site("settings") is False
 
 
 def test_dashboard_counts(admin_client, seeded):

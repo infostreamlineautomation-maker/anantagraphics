@@ -110,25 +110,30 @@ function ProjectList() {
           onReorder={reorder}
           disabled={!sortable}
           renderItem={(p) => (
-            <div className="flex flex-wrap items-center gap-4">
-              <div className="relative h-16 w-14 shrink-0 overflow-hidden rounded-card bg-cream">
-                {p.cover_image && <Image src={mediaUrl(p.cover_image)} alt="" fill sizes="56px" className="object-cover" />}
+            // Phones: image + title on one line, controls wrap below; wider screens: one row
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+              <div className="flex min-w-0 basis-full items-center gap-3 sm:basis-0 sm:flex-1 sm:gap-4">
+                <div className="relative h-16 w-14 shrink-0 overflow-hidden rounded-card bg-cream">
+                  {p.cover_image && <Image src={mediaUrl(p.cover_image)} alt="" fill sizes="56px" className="object-cover" />}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <Link href={`/projects/${p.id}`} className="font-medium hover:text-brand">
+                    {p.title}
+                  </Link>
+                  <p className="truncate text-sm text-muted">
+                    {p.category_name}
+                    {p.client ? ` · ${p.client}` : ""}
+                  </p>
+                </div>
               </div>
-              <div className="min-w-0 flex-1">
-                <Link href={`/projects/${p.id}`} className="font-medium hover:text-brand">
-                  {p.title}
-                </Link>
-                <p className="truncate text-sm text-muted">
-                  {p.category_name}
-                  {p.client ? ` · ${p.client}` : ""}
-                </p>
+              <div className="flex flex-wrap items-center gap-3">
+                {p.is_featured && <Badge tone="blue">In “Explore more”</Badge>}
+                {!p.is_active && <Badge>Hidden</Badge>}
+                <Toggle checked={p.is_active} onChange={(v) => patch(p, { is_active: v }, `${p.title} is now ${v ? "visible" : "hidden"}`)} label="Visible" />
+                <LinkButton href={`/projects/${p.id}`} variant="secondary" size="sm">
+                  Edit
+                </LinkButton>
               </div>
-              {p.is_featured && <Badge tone="blue">In “Explore more”</Badge>}
-              {!p.is_active && <Badge>Hidden</Badge>}
-              <Toggle checked={p.is_active} onChange={(v) => patch(p, { is_active: v }, `${p.title} is now ${v ? "visible" : "hidden"}`)} label="Visible" />
-              <LinkButton href={`/projects/${p.id}`} variant="secondary" size="sm">
-                Edit
-              </LinkButton>
             </div>
           )}
         />

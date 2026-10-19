@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
-import { MapEmbed } from "@/components/consent/MapEmbed";
 import { ContactForm, ContactFormFromUrl } from "@/components/forms/ContactForm";
 import { SocialIcons } from "@/components/layout/SocialIcons";
 import { ContactRows, contactRows } from "@/components/sections/ContactRows";
@@ -63,14 +62,8 @@ export default async function ContactPage() {
           </div>
         </FadeIn>
       </div>
-
-      {contact.map_embed_url?.startsWith("https://www.google.com/maps") && (
-        <FadeIn direction="up">
-          <section className="container-site section-y" aria-label="Map">
-            <MapEmbed embedUrl={contact.map_embed_url} address={contact.address} mapUrl={contact.map_url} />
-          </section>
-        </FadeIn>
-      )}
+      {/* No separate map block: the Office Address card above opens the location in Google Maps */}
+      <div className="section-y" />
     </>
   );
 }

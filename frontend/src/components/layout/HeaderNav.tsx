@@ -7,10 +7,11 @@ import { useEffect, useState } from "react";
 
 import { motion } from "motion/react";
 
-import { CloseIcon, MenuIcon } from "@/components/ui/Icons";
+import { CloseIcon, MailIcon, MenuIcon, PhoneIcon } from "@/components/ui/Icons";
 import { Magnetic } from "@/components/ui/Motion";
 import { isActivePath, NAV_LEFT, NAV_LINKS, NAV_RIGHT, type NavLink } from "@/content/site";
 import { mediaUrl } from "@/lib/media";
+import { formatPhone, phoneHref } from "@/lib/phone";
 import type { Settings } from "@/lib/types";
 
 import { SocialIcons } from "./SocialIcons";
@@ -41,9 +42,9 @@ export function HeaderNav({ brand, contact, socials }: Props) {
           alt={brand.name}
           width={216}
           height={216}
-          sizes="(min-width: 1024px) 84px, (min-width: 768px) 76px, 60px"
+          sizes="(min-width: 1024px) 88px, (min-width: 768px) 78px, 60px"
           preload
-          className="size-[3.75rem] drop-shadow-sm md:size-[4.75rem] lg:size-[5.25rem]"
+          className="size-15 drop-shadow-md md:size-[4.75rem] lg:size-[5.25rem]"
         />
       </Link>
     </Magnetic>
@@ -53,32 +54,32 @@ export function HeaderNav({ brand, contact, socials }: Props) {
     <>
       <div className="container-site flex h-full items-center justify-center pt-2 md:pt-3">
         {/* Desktop / tablet: links | badge | links on one red pill */}
-        <nav aria-label="Main" className="relative hidden items-center md:flex">
-          <div aria-hidden className="absolute inset-x-0 top-1/2 h-11 -translate-y-1/2 rounded-pill bg-brand shadow-[0_6px_20px_rgb(0_0_0/0.12)] lg:h-12" />
-          <NavGroup links={NAV_LEFT} pathname={pathname} className="pr-5 pl-8 lg:pr-6 lg:pl-10" />
+        <nav aria-label="Main" className="pointer-events-auto relative hidden items-center md:flex">
+          <div aria-hidden className="absolute inset-x-0 top-1/2 h-12 -translate-y-1/2 rounded-pill bg-brand shadow-[0_8px_24px_rgb(0_0_0/0.16)] md:h-13 lg:h-15" />
+          <NavGroup links={NAV_LEFT} pathname={pathname} className="pr-6 pl-9 lg:pr-8 lg:pl-12" />
           {badge}
-          <NavGroup links={NAV_RIGHT} pathname={pathname} className="pr-8 pl-5 lg:pr-10 lg:pl-6" />
+          <NavGroup links={NAV_RIGHT} pathname={pathname} className="pr-9 pl-6 lg:pr-12 lg:pl-8" />
         </nav>
 
-        {/* Phones: menu button | badge, balanced pill */}
-        <div className="relative flex w-full max-w-sm items-center justify-between md:hidden">
-          <div aria-hidden className="absolute inset-x-0 top-1/2 h-10 -translate-y-1/2 rounded-pill bg-brand shadow-[0_6px_20px_rgb(0_0_0/0.12)]" />
+        {/* Phones: menu button | badge | spacer (keeps badge centered in pill) */}
+        <div className="pointer-events-auto relative flex w-full max-w-sm items-center justify-between md:hidden">
+          <div aria-hidden className="absolute inset-x-0 top-1/2 h-12 -translate-y-1/2 rounded-pill bg-brand shadow-[0_8px_24px_rgb(0_0_0/0.16)]" />
           <button
             type="button"
             onClick={() => setOpen(true)}
             aria-label="Open menu"
             aria-expanded={open}
-            className="relative ml-2 flex size-10 items-center justify-center rounded-full text-white active:bg-white/10"
+            className="relative ml-2 flex size-11 items-center justify-center rounded-full text-white active:bg-white/10"
           >
             <MenuIcon className="size-6" />
           </button>
           {badge}
-          <div aria-hidden className="w-10 mr-2 pointer-events-none" />
+          <span aria-hidden className="relative mr-2 size-11 pointer-events-none" />
         </div>
       </div>
 
       {/* Mobile drawer */}
-      <div className="md:hidden">
+      <div className="pointer-events-auto md:hidden">
         <div
           aria-hidden
           onClick={() => setOpen(false)}
@@ -112,10 +113,20 @@ export function HeaderNav({ brand, contact, socials }: Props) {
               );
             })}
           </ul>
-          <div className="mt-auto space-y-2 border-t border-white/15 pt-5 font-sans text-xs text-white/85">
+          <div className="mt-auto space-y-2.5 border-t border-white/15 pt-5 font-sans text-sm text-white/90">
             <SocialIcons socials={socials} size="sm" />
-            <a href={`tel:${contact.phone.replace(/[^\d+]/g, "")}`} className="block pt-2 hover:text-white">{contact.phone}</a>
-            <a href={`mailto:${contact.email}`} className="block hover:text-white">{contact.email}</a>
+            {contact.phone && (
+              <a href={phoneHref(contact.phone)} className="flex items-center gap-2.5 pt-1 hover:text-white">
+                <PhoneIcon className="size-4 shrink-0" />
+                {formatPhone(contact.phone)}
+              </a>
+            )}
+            {contact.email && (
+              <a href={`mailto:${contact.email}`} className="flex items-center gap-2.5 break-all hover:text-white">
+                <MailIcon className="size-4 shrink-0" />
+                {contact.email}
+              </a>
+            )}
           </div>
         </nav>
       </div>
@@ -125,21 +136,21 @@ export function HeaderNav({ brand, contact, socials }: Props) {
 
 function NavGroup({ links, pathname, className }: { links: NavLink[]; pathname: string; className: string }) {
   return (
-    <ul className={`relative flex items-center gap-5 lg:gap-7 ${className}`}>
+    <ul className={`relative flex items-center gap-6 lg:gap-8 ${className}`}>
       {links.map((l) => {
         const active = isActivePath(pathname, l.href);
         return (
-          <li key={l.href} className="relative py-1">
+          <li key={l.href} className="relative py-2.5">
             <Link
               href={l.href}
               aria-current={active ? "page" : undefined}
-              className={`relative z-10 font-sans text-nav whitespace-nowrap text-white transition-opacity duration-200 hover:opacity-85`}
+              className={`relative z-10 font-sans text-[0.9375rem] lg:text-base font-medium whitespace-nowrap text-white transition-opacity duration-200 hover:opacity-85`}
             >
               {l.label}
               {active && (
                 <motion.span
                   layoutId="activeNavUnderline"
-                  className="absolute -bottom-1 left-0 right-0 h-[2px] bg-white rounded-full"
+                  className="absolute -bottom-1.5 left-0 right-0 h-[2.5px] bg-white rounded-full"
                   transition={{ type: "spring", stiffness: 380, damping: 30 }}
                 />
               )}

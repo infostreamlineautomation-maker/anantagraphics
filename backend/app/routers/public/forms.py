@@ -121,16 +121,11 @@ def create_enquiry(request: Request, payload: EnquiryCreate, background: Backgro
 
     service = db.scalar(select(Service).where(Service.id == payload.service_id)) if payload.service_id else None
 
-    # Normalize phone: ensure +91 prefix if not present and non-empty
-    phone_clean = (payload.phone or "").strip() or None
-    if phone_clean and not phone_clean.startswith("+"):
-        phone_clean = f"+91 {phone_clean.lstrip('0')}"
-
     enquiry = Enquiry(
         type=payload.type,
         name=payload.name.strip(),
         email=payload.email.lower().strip(),
-        phone=phone_clean,
+        phone=payload.phone,  # validated and formatted "+91 98250 12345" by EnquiryCreate
         message=payload.message.strip() if payload.message else None,
         service_id=service.id if service else None,
         service_name=service.title if service else None,

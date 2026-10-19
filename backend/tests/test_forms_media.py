@@ -71,17 +71,33 @@ def test_enquiry_validation_and_rate_limit(public_client):
     assert public_client.post("/enquiries", json={"name": "A", "email": "a@example.com"}).status_code == 422
     assert public_client.post("/enquiries", json={"name": "Ann", "email": "not-an-email"}).status_code == 422
     assert public_client.post("/enquiries", json={"name": "Ann", "email": "a@example.com", "phone": "<script>"}).status_code == 422
+    # Too short / too long for India, and too short for other countries
+    for phone in ("123", "8555", "451236", "98250 123456", "+44 12"):
+        assert public_client.post("/enquiries", json={"name": "Ann", "email": "a@example.com", "phone": phone}).status_code == 422, phone
 
     limiter.enabled = True
     codes = [public_client.post("/enquiries", json={"name": "Ann", "email": "a@example.com"}).status_code for _ in range(6)]
     assert codes[:5] == [201] * 5 and codes[5] == 429
 
 
+def test_phone_formats():
+    from app.schemas.inbox import normalize_phone
+
+    assert normalize_phone("98250 12345") == "+91 98250 12345"
+    assert normalize_phone("09825012345") == "+91 98250 12345"
+    assert normalize_phone("+91-98250-12345") == "+91 98250 12345"
+    assert normalize_phone("919825012345") == "+91 98250 12345"
+    assert normalize_phone("+971 50 123 4567") == "+971501234567"
+    assert normalize_phone("  ") is None
+
+
 def test_enquiry_csv_neutralises_formulas(public_client, admin_client):
-    public_client.post("/enquiries", json={"name": "=HYPERLINK(1)", "email": "x@example.com", "message": "+cmd"})
+    public_client.post("/enquiries", json={"name": "=HYPERLINK(1)", "email": "x@example.com", "message": "+cmd", "phone": "98250 12345"})
     res = admin_client.get("/enquiries/export.csv")
     assert res.status_code == 200 and res.headers["content-type"].startswith("text/csv")
     assert "'=HYPERLINK(1)" in res.text and "'+cmd" in res.text
+    # Phones are plain text in Excel without a visible apostrophe
+    assert " +91 98250 12345" in res.text and "'+91" not in res.text
 
 
 def test_newsletter_subscribe_resubscribe_and_export(public_client, admin_client):
@@ -110,6 +126,17 @@ def test_media_upload_rejects_fakes_and_guards_in_use_files(admin_client):
 
     fake = admin_client.post("/media", files={"file": ("evil.png", b"<svg onload=alert(1)>", "image/png")})
     assert fake.status_code == 400
+
+    # AVIF is accepted and stored as WebP
+    import io
+
+    from PIL import Image
+
+    buf = io.BytesIO()
+    Image.new("RGB", (20, 10), (10, 120, 60)).save(buf, "AVIF")
+    avif = admin_client.post("/media", files={"file": ("pouches.avif", buf.getvalue(), "image/avif")})
+    assert avif.status_code == 201, avif.text
+    assert avif.json()["url"].endswith(".webp") and avif.json()["mime_type"] == "image/webp"
 
     admin_client.post("/clients", json={"name": "Acme", "logo": media["url"]})
     assert admin_client.get(f"/media/{media['id']}/usage").json() == ["Client: Acme"]

@@ -28,6 +28,13 @@ enquiries = APIRouter(prefix="/enquiries", tags=["enquiries"])
 newsletter = APIRouter(prefix="/newsletter", tags=["newsletter"])
 
 
+def _csv_phone(phone: str | None) -> str:
+    """Phone cell. The form only allows digits, +, (, ), -, . and spaces, so it can't carry a formula, but
+    Excel would still read "+91 98250 12345" as a sum: a leading space keeps it plain text without
+    showing the visible ' that the formula guard below adds."""
+    return f" {phone}" if phone else ""
+
+
 def _csv_response(header: list[str], rows: list[list], name: str) -> StreamingResponse:
     buf = io.StringIO()
     writer = csv.writer(buf)
@@ -96,7 +103,7 @@ def export_enquiries(
     db: Session = Depends(get_db),
 ):
     rows = [
-        [e.id, e.created_at.strftime("%Y-%m-%d %H:%M"), e.type, e.status, e.name, e.email, e.phone or "",
+        [e.id, e.created_at.strftime("%Y-%m-%d %H:%M"), e.type, e.status, e.name, e.email, _csv_phone(e.phone),
          e.service_name or "", e.message or "", e.notes or ""]
         for e in db.scalars(_enquiries(type, status, q, date_from, date_to).order_by(Enquiry.created_at.desc()))
     ]

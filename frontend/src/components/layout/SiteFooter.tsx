@@ -1,13 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { MailIcon, MapPinIcon, PhoneIcon } from "@/components/ui/Icons";
 import { EXPLORE_LINKS, LEGAL_LINKS } from "@/content/site";
 import { getSettings } from "@/lib/api";
 import { mediaUrl } from "@/lib/media";
+import { formatPhone, phoneHref } from "@/lib/phone";
 
 import { NewsletterForm } from "./NewsletterForm";
 import { SocialIcons } from "./SocialIcons";
-import { formatDisplayPhone } from "@/components/sections/ContactRows";
+
+const CONTACT_LINK = "flex items-start gap-2.5 transition-colors hover:text-brand";
+const CONTACT_ICON = "mt-[0.2em] size-[1.1em] shrink-0 text-brand";
 
 /** Light-grey footer: logo, tagline + newsletter, Explore, Get in Touch; white legal bar below. */
 export async function SiteFooter() {
@@ -49,25 +53,35 @@ export async function SiteFooter() {
                 </ul>
               </nav>
 
-                <div>
-                  <p className="text-title font-semibold text-ink">Get in Touch</p>
-                  <address className="mt-3 flex max-w-64 flex-col gap-1.5 text-body-lg text-ink-soft not-italic md:mt-4">
-                    {(() => {
-                      const displayPhone = formatDisplayPhone(contact.phone);
-                      return (
-                        <a href={`tel:${displayPhone.replace(/[^\d+]/g, "")}`} className="hover:text-brand">
-                          {displayPhone}
-                        </a>
-                      );
-                    })()}
-                    <a href={`mailto:${contact.email}`} className="break-all hover:text-brand">
-                    {contact.email}
-                  </a>
-                  <a href={contact.map_url} target="_blank" rel="noopener noreferrer" className="hover:text-brand">
-                    {contact.address}
-                  </a>
+              <div>
+                <p className="text-title font-semibold text-ink">Get in Touch</p>
+                <address className="mt-3 flex max-w-72 flex-col gap-2.5 text-body-lg text-ink-soft not-italic md:mt-4">
+                  {contact.phone && (
+                    <a href={phoneHref(contact.phone)} className={CONTACT_LINK}>
+                      <PhoneIcon className={CONTACT_ICON} />
+                      <span>{formatPhone(contact.phone)}</span>
+                    </a>
+                  )}
+                  {contact.email && (
+                    <a href={`mailto:${contact.email}`} className={CONTACT_LINK}>
+                      <MailIcon className={CONTACT_ICON} />
+                      <span className="break-all">{contact.email}</span>
+                    </a>
+                  )}
+                  {contact.address &&
+                    (contact.map_url ? (
+                      <a href={contact.map_url} target="_blank" rel="noopener noreferrer" className={CONTACT_LINK} title="Open in Google Maps">
+                        <MapPinIcon className={CONTACT_ICON} />
+                        <span>{contact.address}</span>
+                      </a>
+                    ) : (
+                      <span className={CONTACT_LINK}>
+                        <MapPinIcon className={CONTACT_ICON} />
+                        <span>{contact.address}</span>
+                      </span>
+                    ))}
                 </address>
-                <div className="mt-3">
+                <div className="mt-4">
                   <SocialIcons socials={socials} />
                 </div>
               </div>
@@ -86,11 +100,6 @@ export async function SiteFooter() {
               </Link>
             </li>
           ))}
-          <li>
-            <Link href="/cookies#settings" className="hover:text-brand">
-              Cookie Settings
-            </Link>
-          </li>
         </ul>
       </div>
     </footer>

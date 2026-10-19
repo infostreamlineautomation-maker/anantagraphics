@@ -55,13 +55,14 @@ export default async function ProjectPage({ params }: Props) {
         lead={str(header, "lead")}
       />
 
-      <div className="w-full mt-8 grid items-center gap-6 md:mt-12 md:grid-cols-[minmax(0,0.45fr)_minmax(0,1fr)] md:gap-12">
-        <FadeIn direction="right">
-          <div className="relative aspect-[519/448] overflow-hidden rounded-media bg-panel shadow-sm hover:shadow-lg transition-shadow duration-500">
+      {/* Phones: title, overview and details first, then the image, so the facts aren't pushed below the fold */}
+      <div className="mx-auto mt-8 grid w-full max-w-5xl items-center gap-6 md:mt-12 md:grid-cols-[minmax(0,0.42fr)_minmax(0,1fr)] md:gap-10">
+        <FadeIn direction="right" className="order-2 md:order-1">
+          <div className="relative mx-auto aspect-[4/3] max-w-md overflow-hidden rounded-media bg-panel shadow-sm transition-shadow duration-500 hover:shadow-lg md:aspect-[519/448] md:max-w-none">
             <MediaImage src={p.intro_image || p.cover_image} alt={p.title} sizes="(min-width: 768px) 38vw, 92vw" preload />
           </div>
         </FadeIn>
-        <FadeIn direction="left" delay={0.1}>
+        <FadeIn direction="left" delay={0.1} className="order-1 md:order-2">
           <div>
             <h1 className="font-sans text-section font-medium text-ink">{p.title}</h1>
             {(p.description || p.short_description) && (
@@ -82,14 +83,15 @@ export default async function ProjectPage({ params }: Props) {
       </div>
 
       {p.gallery.length > 0 && (
-        <div className="w-full mt-10 flex flex-col gap-6 md:mt-14 md:gap-8">
+        // Capped width so a gallery image never fills the whole screen
+        <div className="mx-auto mt-10 flex w-full max-w-4xl flex-col gap-5 md:mt-14 md:gap-7">
           {p.gallery.map((img, i) => (
             <FadeIn key={`${img}-${i}`} direction="up" distance={30} delay={Math.min(i * 0.08, 0.3)}>
-              <div className="group relative aspect-[1656/871] overflow-hidden rounded-media bg-panel shadow-sm hover:shadow-xl transition-shadow duration-500">
+              <div className="group relative aspect-[16/9] overflow-hidden rounded-media bg-panel shadow-sm transition-shadow duration-500 hover:shadow-xl">
                 <MediaImage
                   src={img}
                   alt={`${p.title} — image ${i + 1}`}
-                  sizes="(min-width: 1440px) 1600px, 94vw"
+                  sizes="(min-width: 1024px) 896px, 94vw"
                   className="transition-transform duration-700 ease-out group-hover:scale-[1.02]"
                 />
               </div>
@@ -99,7 +101,7 @@ export default async function ProjectPage({ params }: Props) {
       )}
 
       {p.explore.length > 0 && (
-        <section className="w-full mt-14 md:mt-20" aria-labelledby="explore-heading">
+        <section className="mx-auto mt-14 w-full max-w-5xl md:mt-20" aria-labelledby="explore-heading">
           <FadeIn direction="up">
             <h2 id="explore-heading" className="font-sans text-h3 font-medium text-ink">
               {str(header, "explore_title", "Explore more projects")}

@@ -100,3 +100,18 @@ def test_cms_test_email_explains_missing_setup(admin_client, monkeypatch):
     monkeypatch.setattr(settings, "SMTP_HOST", "")
     res = admin_client.post("/settings/email/test", json={})
     assert res.status_code == 400 and "SMTP_HOST" in res.json()["detail"]
+
+
+def test_cms_saves_smtp_settings(admin_client):
+    # Used to hit the generic PUT /settings/{key} route and fail with 422
+    body = {"host": "smtp.example.com", "port": 587, "ssl": False, "user": "alerts@example.com",
+            "password": "app-password", "from_email": "Ananta <alerts@example.com>", "notify_to": "team@example.com"}
+    res = admin_client.put("/settings/email", json=body)
+    assert res.status_code == 200, res.text
+    status = admin_client.get("/settings/email").json()
+    assert status["host"] == "smtp.example.com" and status["port"] == 587 and status["has_password"]
+    assert "password" not in status or status.get("password") in (None, "")
+
+    # Leaving the password empty keeps the saved one
+    assert admin_client.put("/settings/email", json={**body, "password": None}).status_code == 200
+    assert admin_client.get("/settings/email").json()["has_password"]

@@ -39,6 +39,33 @@ export function CloseIcon(props: IconProps) {
   );
 }
 
+/* Contact glyphs: footer, contact cards and the mobile menu. */
+export function PhoneIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden {...base} strokeWidth={1.75} {...props}>
+      <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2" />
+    </svg>
+  );
+}
+
+export function MailIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden {...base} strokeWidth={1.75} {...props}>
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="m3 7 9 6 9-6" />
+    </svg>
+  );
+}
+
+export function MapPinIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden {...base} strokeWidth={1.75} {...props}>
+      <path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21" />
+      <circle cx="12" cy="9.5" r="2.5" />
+    </svg>
+  );
+}
+
 /* Outline social glyphs for the dark "Get In Touch" card ("Connect with us"). */
 export function LinkedInOutline(props: IconProps) {
   return (

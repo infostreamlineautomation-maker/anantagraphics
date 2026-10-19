@@ -32,8 +32,8 @@ export function Panel({ title, description, children, className = "", actions }:
   return (
     <section className={`rounded-card border border-line bg-white p-4 md:p-5 ${className}`}>
       {(title || actions) && (
-        <div className="mb-4 flex items-start justify-between gap-4">
-          <div>
+        <div className="mb-4 flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
+          <div className="min-w-0 flex-1 basis-60">
             {title && <h2 className="font-display text-base font-semibold">{title}</h2>}
             {description && <p className="mt-0.5 text-sm text-muted">{description}</p>}
           </div>
@@ -85,7 +85,7 @@ const BADGE = {
 } as const;
 
 export function Badge({ tone = "grey", children }: { tone?: keyof typeof BADGE; children: ReactNode }) {
-  return <span className={`inline-flex items-center rounded-pill px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset ${BADGE[tone]}`}>{children}</span>;
+  return <span className={`inline-flex items-center rounded-pill px-2.5 py-0.5 text-xs font-medium whitespace-nowrap ring-1 ring-inset ${BADGE[tone]}`}>{children}</span>;
 }
 
 export function Pagination({ page, pageSize, total, onPage }: { page: number; pageSize: number; total: number; onPage: (p: number) => void }) {

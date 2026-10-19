@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import { adminFetch } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
@@ -34,6 +34,25 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const toast = useToast();
   const [menuOpen, setMenuOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [menuPath, setMenuPath] = useState(pathname);
+
+  // Close the phone menu whenever the page changes (links, back button)
+  if (menuPath !== pathname) {
+    setMenuPath(pathname);
+    setMenuOpen(false);
+  }
+
+  // While the phone menu is open: lock page scrolling behind it, close on Esc
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMenuOpen(false);
+    window.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
 
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
   const items = NAV.filter((n) => !n.superadmin || admin?.role === "superadmin");
@@ -54,9 +73,20 @@ export function AdminShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-[232px_minmax(0,1fr)]">
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-[232px] overflow-y-auto bg-night text-white transition-transform lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${menuOpen ? "translate-x-0" : "-translate-x-full"}`}
+        className={`fixed inset-y-0 left-0 z-40 w-[232px] overflow-y-auto overscroll-contain bg-night text-white transition-transform lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${menuOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
-        <div className="p-4">
+        {/* Explicit close button for phones */}
+        <button
+          type="button"
+          onClick={() => setMenuOpen(false)}
+          aria-label="Close menu"
+          className="absolute top-2 right-2 z-10 flex size-8 items-center justify-center rounded-full bg-white/10 text-white lg:hidden"
+        >
+          <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth={2.25} strokeLinecap="round" aria-hidden>
+            <path d="M6 6l12 12M18 6 6 18" />
+          </svg>
+        </button>
+        <div className="p-4 max-lg:pt-12">
           <Link href="/" className="block rounded-card bg-white px-3 py-2.5">
             <Image src="/logo.png" alt="Ananta Graphics" width={900} height={239} preload className="h-auto w-full" />
           </Link>
@@ -84,7 +114,13 @@ export function AdminShell({ children }: { children: ReactNode }) {
         </nav>
       </aside>
 
-      {menuOpen && <button aria-label="Close menu" className="fixed inset-0 z-30 bg-black/40 lg:hidden" onClick={() => setMenuOpen(false)} />}
+      {/* Backdrop: closes on the first touch (pointerdown), not only on a completed click, which some
+          phones swallowed when the touch turned into a scroll */}
+      <div
+        aria-hidden
+        onPointerDown={() => setMenuOpen(false)}
+        className={`fixed inset-0 z-30 touch-none bg-black/40 transition-opacity lg:hidden ${menuOpen ? "opacity-100" : "pointer-events-none opacity-0"}`}
+      />
 
       <div className="flex min-h-screen flex-col">
         <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-4 border-b border-line bg-white px-4 md:px-6">

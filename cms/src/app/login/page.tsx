@@ -15,6 +15,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (admin) router.replace("/");
@@ -66,7 +67,29 @@ export default function LoginPage() {
           <label className="mt-5 block text-sm font-medium" htmlFor="password">
             Password
           </label>
-          <input id="password" name="password" type="password" autoComplete="current-password" required className={INPUT} />
+          <div className="relative">
+            <input
+              id="password"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              autoComplete="current-password"
+              required
+              className={`${INPUT} pr-12`}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              aria-pressed={showPassword}
+              className="absolute top-1/2 right-1.5 mt-[3px] flex size-9 -translate-y-1/2 items-center justify-center rounded-full text-line hover:bg-white/10 hover:text-white"
+            >
+              <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12" />
+                <circle cx="12" cy="12" r="3" />
+                {showPassword && <path d="M4 4l16 16" />}
+              </svg>
+            </button>
+          </div>
 
           {error && (
             <p role="alert" className="mt-4 rounded-card bg-brand/25 px-4 py-2 text-sm text-white">

@@ -15,6 +15,12 @@ import { ENQUIRY_STATUS_LABELS, ENQUIRY_TYPE_LABELS, EnquiryStatusBadge } from "
 
 const FILTER_KEYS = ["type", "status", "q", "date_from", "date_to"] as const;
 
+/** Same pre-filled email as "Reply by email" on the enquiry page. */
+export function replyHref(e: Pick<Enquiry, "email" | "type">): string {
+  const subject = `Re: your ${ENQUIRY_TYPE_LABELS[e.type].toLowerCase()} — Ananta Graphics`;
+  return `mailto:${e.email}?subject=${encodeURIComponent(subject)}`;
+}
+
 export function EnquiryList() {
   const params = useSearchParams();
   const router = useRouter();
@@ -95,6 +101,9 @@ export function EnquiryList() {
                 <th className="px-4 py-3 font-medium">Type</th>
                 <th className="px-4 py-3 font-medium">Service</th>
                 <th className="px-4 py-3 font-medium">Status</th>
+                <th className="px-4 py-3 font-medium">
+                  <span className="sr-only">Quick actions</span>
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
@@ -111,6 +120,17 @@ export function EnquiryList() {
                   <td className="px-4 py-3 text-muted">{e.service_name || "—"}</td>
                   <td className="px-4 py-3">
                     <EnquiryStatusBadge status={e.status} />
+                  </td>
+                  {/* Reply / call straight from the list, without opening the enquiry first */}
+                  <td className="px-4 py-3 text-right whitespace-nowrap">
+                    <a href={replyHref(e)} className={`${buttonClass("secondary", "sm")} font-normal`} title={`Email ${e.email}`}>
+                      Reply
+                    </a>
+                    {e.phone && (
+                      <a href={`tel:${e.phone.replace(/[^\d+]/g, "")}`} className={`${buttonClass("ghost", "sm")} ml-1 font-normal`} title={`Call ${e.phone}`}>
+                        Call
+                      </a>
+                    )}
                   </td>
                 </tr>
               ))}

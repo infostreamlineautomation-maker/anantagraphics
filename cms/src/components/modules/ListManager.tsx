@@ -96,15 +96,18 @@ export function ListManager<T extends Item>({ title, description, path, noun, la
             editing === item.id ? (
               <Form item={item} onCancel={() => setEditing(null)} onSaved={(i) => onSaved(i, false)} />
             ) : (
-              <div className="flex flex-wrap items-center gap-4">
-                <div className="min-w-0 flex-1">{summary(item)}</div>
-                {!item.is_active && <Badge>Hidden</Badge>}
-                <Button size="sm" variant="secondary" onClick={() => setEditing(item.id)}>
-                  Edit
-                </Button>
-                <Button size="sm" variant="ghost" onClick={() => remove(item)}>
-                  Delete
-                </Button>
+              // Phones: details on their own line, buttons below; wider screens: one row
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                <div className="min-w-0 basis-full sm:basis-0 sm:flex-1">{summary(item)}</div>
+                <div className="flex items-center gap-2 sm:gap-3">
+                  {!item.is_active && <Badge>Hidden</Badge>}
+                  <Button size="sm" variant="secondary" onClick={() => setEditing(item.id)}>
+                    Edit
+                  </Button>
+                  <Button size="sm" variant="ghost" onClick={() => remove(item)}>
+                    Delete
+                  </Button>
+                </div>
               </div>
             )
           }
