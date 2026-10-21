@@ -12,9 +12,9 @@ const ICONS: { key: SocialKey; label: string; src?: string }[] = [
 
 function YouTubeTile({ className }: { className: string }) {
   return (
-    <svg viewBox="0 0 72 72" aria-hidden className={className}>
-      <rect width="72" height="72" rx="14" fill="#FF0000" />
-      <path d="M29 24.5v23L48 36z" fill="#fff" />
+    <svg viewBox="0 0 100 100" aria-hidden className={className}>
+      <rect x="12" y="12" width="76" height="76" rx="18" fill="#FF0000" />
+      <path d="M43 37c0-.8.9-1.3 1.6-.9l18 13c.7.5.7 1.5 0 2l-18 13c-.7.4-1.6-.1-1.6-.9z" fill="#fff" />
     </svg>
   );
 }

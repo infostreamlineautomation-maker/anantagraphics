@@ -20,7 +20,8 @@ SETTINGS = {
         "phone": "+91 773-365-1240",
         "email": "office@anantagraphics.com",
         "address": "LG-04, Hiral Arcade, Opp. New Court, Athwalines, Surat 395 007, Gujarat, India",
-        "map_url": "https://www.google.com/maps/search/?api=1&query=Hiral+Arcade+Athwalines+Surat",
+        "map_url": "https://www.google.com/maps/search/?api=1&query=Ananta+Graphics+Hiral+Arcade+Athwalines+Surat",
+        "map_embed_url": "https://maps.google.com/maps?q=Ananta+Graphics,+LG-04,+Hiral+Arcade,+opp.+New+Court+Building,+Meghdoot+Society,+Athwalines,+Athwa,+Surat,+Gujarat+395007&t=&z=17&ie=UTF8&iwloc=&output=embed",
     },
     "socials": {
         "instagram": "https://www.instagram.com/",

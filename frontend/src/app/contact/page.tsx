@@ -4,7 +4,6 @@ import { Suspense } from "react";
 import { ContactForm, ContactFormFromUrl } from "@/components/forms/ContactForm";
 import { SocialIcons } from "@/components/layout/SocialIcons";
 import { ContactRows, contactRows } from "@/components/sections/ContactRows";
-import { MapPinIcon } from "@/components/ui/Icons";
 import { MediaImage } from "@/components/ui/MediaImage";
 import { FadeIn } from "@/components/ui/Motion";
 import { getPage, getServices, getSettings } from "@/lib/api";
@@ -16,17 +15,30 @@ export const metadata: Metadata = {
   description: "Tell us about your design, printing, packaging, signage or corporate gifting project.",
 };
 
+// Exact Google Maps place embed for Ananta Graphics with business rating & card pinned
+const DEFAULT_ANANTA_EMBED_URL =
+  "https://maps.google.com/maps?q=Ananta+Graphics%2C+LG-04%2C+Hiral+Arcade%2C+opp.+New+Court+Building%2C+Meghdoot+Society%2C+Athwalines%2C+Athwa%2C+Surat%2C+Gujarat+395007&t=&z=17&ie=UTF8&iwloc=&output=embed";
+
+function resolveMapEmbedUrl(raw?: string | null): string {
+  if (!raw) return DEFAULT_ANANTA_EMBED_URL;
+  const trimmed = raw.trim();
+  // Support pasting full <iframe src="..." /> snippet from Google Maps
+  const iframeMatch = trimmed.match(/src=["']([^"']+)["']/i);
+  const url = iframeMatch ? iframeMatch[1] : trimmed;
+  // If the saved setting is the old generic query without Ananta Graphics, use the exact pinned URL
+  if (url.includes("q=Hiral+Arcade") && !url.includes("Ananta")) {
+    return DEFAULT_ANANTA_EMBED_URL;
+  }
+  return url;
+}
+
 export default async function ContactPage() {
   const [sections, services, { contact, socials }] = await Promise.all([getPage("contact"), getServices(), getSettings()]);
   const hero = section(sections, "hero");
   const form = section(sections, "form");
   const formProps = { services: services.map(({ id, title }) => ({ id, title })), submitLabel: str(form, "submit_label", "Send Message") };
 
-  const mapEmbedUrl =
-    (contact as { map_embed_url?: string }).map_embed_url ||
-    `https://maps.google.com/maps?q=${encodeURIComponent(
-      contact.address || "Hiral Arcade, Athwalines, Surat, Gujarat"
-    )}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
+  const mapEmbedUrl = resolveMapEmbedUrl((contact as { map_embed_url?: string }).map_embed_url);
 
   return (
     <>
@@ -70,42 +82,18 @@ export default async function ContactPage() {
         </FadeIn>
       </div>
 
-      {/* Embedded Google Map */}
-      <section className="container-site pt-12 md:pt-16 pb-16 md:pb-24" aria-label="Our Location">
+      {/* Embedded Google Map with pinned studio location */}
+      <section className="container-site pt-8 md:pt-12 pb-16 md:pb-24" aria-label="Our Location">
         <FadeIn direction="up" delay={0.1}>
-          <div className="relative overflow-hidden rounded-[20px] md:rounded-[28px] border border-line bg-surface shadow-sm">
-            <div className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between sm:px-8 sm:py-5 border-b border-line bg-white">
-              <div className="flex items-center gap-3">
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand/10 text-brand">
-                  <MapPinIcon className="size-5" />
-                </div>
-                <div>
-                  <h2 className="font-sans text-base font-semibold text-ink">Visit Our Studio</h2>
-                  <p className="font-sans text-small text-ink-soft">{contact.address}</p>
-                </div>
-              </div>
-              {contact.map_url && (
-                <a
-                  href={contact.map_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 self-start rounded-full bg-brand px-4 py-2 font-sans text-xs font-semibold text-white shadow-xs transition-colors hover:bg-brand-dark sm:self-center"
-                >
-                  <span>Open in Google Maps</span>
-                  <span aria-hidden>↗</span>
-                </a>
-              )}
-            </div>
-            <div className="relative h-[340px] sm:h-[420px] md:h-[480px] w-full bg-panel">
-              <iframe
-                title="Ananta Graphics Office Location"
-                src={mapEmbedUrl}
-                className="h-full w-full border-0"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                allowFullScreen
-              />
-            </div>
+          <div className="relative h-[380px] sm:h-[460px] md:h-[520px] w-full overflow-hidden rounded-[20px] md:rounded-[28px] border border-line bg-panel shadow-sm">
+            <iframe
+              title="Ananta Graphics Office Location"
+              src={mapEmbedUrl}
+              className="h-full w-full border-0"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
           </div>
         </FadeIn>
       </section>

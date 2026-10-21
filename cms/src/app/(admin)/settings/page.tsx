@@ -68,6 +68,12 @@ const GROUPS: { key: keyof Settings; title: string; description: string; fields:
         hint: "Opens when visitors tap the address (Google Maps → Share → Copy link).",
         validate: httpsUrl,
       },
+      {
+        key: "map_embed_url",
+        label: "Google Maps embed (iframe code or URL)",
+        kind: "textarea",
+        hint: "From Google Maps: Share → Embed a map → Copy HTML (paste full <iframe> code or src URL here).",
+      },
     ],
   },
   {
