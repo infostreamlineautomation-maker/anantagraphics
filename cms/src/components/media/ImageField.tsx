@@ -14,6 +14,9 @@ import { uploadImage } from "./upload";
 const isVideo = (url?: string | null) =>
   !!url && /\.(mp4|webm|ogv|mov)$/i.test(url.split("?")[0]);
 
+const isInstagram = (url?: string | null) =>
+  !!url && (url.includes("instagram.com") || url.includes("instagr.am"));
+
 /**
  * Single image from the media library (stores the /uploads/... path). Drop a file onto the box to upload
  * it straight away (with an instant preview), or click the box / "Choose image" to pick from the library.
@@ -36,6 +39,7 @@ export function ImageField({
   const [preview, setPreview] = useState<string | null>(null); // local file shown while it uploads
   const toast = useToast();
   const itemIsVideo = isVideo(value);
+  const itemIsInstagram = isInstagram(value);
 
   useEffect(() => () => {
     if (preview) URL.revokeObjectURL(preview);
@@ -88,8 +92,14 @@ export function ImageField({
                   <span className="rounded bg-black/70 px-2 py-0.5 text-[10px] font-medium tracking-wide text-white uppercase">Video</span>
                 </div>
               </div>
+            ) : itemIsInstagram ? (
+              <div className="relative flex size-full flex-col items-center justify-center bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] p-2 text-white">
+                <span className="text-xl">📷</span>
+                <span className="mt-1 text-[10px] font-bold uppercase tracking-wider text-center line-clamp-1">Instagram</span>
+              </div>
             ) : (
-              <Image src={mediaUrl(value)} alt="" fill sizes="160px" className="object-cover" />
+              // eslint-disable-next-line @next/next/no-img-element -- handles local uploads and any external URL without host restriction
+              <img src={mediaUrl(value)} alt="" className="size-full object-cover" />
             )
           ) : (
             <span className="absolute inset-0 flex flex-col items-center justify-center gap-1 px-2 text-center text-xs text-muted">

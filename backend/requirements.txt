@@ -11,3 +11,4 @@ bcrypt>=4.2
 PyJWT>=2.10
 Pillow>=11.0
 slowapi>=0.1.9
+yt-dlp>=2024.10

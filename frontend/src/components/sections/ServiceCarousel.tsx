@@ -10,6 +10,7 @@ import { Magnetic } from "@/components/ui/Motion";
 
 export type ServiceItem = {
   title: string;
+  clientName?: string | null;
   description: string;
   image?: string | null;
   href: string;
@@ -23,7 +24,7 @@ export type ServiceItem = {
  *   and white arrow circle buttons.
  * - Entire carousel track scrolls smoothly with arrows or swipe, peeking off the edge.
  */
-export function ServiceCarousel({ items, ctaLabel = "Our Services" }: { items: ServiceItem[]; ctaLabel?: string }) {
+export function ServiceCarousel({ items, ctaLabel = "View Project Work" }: { items: ServiceItem[]; ctaLabel?: string }) {
   const [active, setActive] = useState(0);
   const trackRef = useRef<HTMLDivElement>(null);
 
@@ -101,10 +102,21 @@ export function ServiceCarousel({ items, ctaLabel = "Our Services" }: { items: S
                     {/* Left: Text & Button */}
                     <div className="flex flex-col justify-between py-1">
                       <div>
-                        <h3 className="font-sans text-2xl md:text-3xl lg:text-[2rem] font-bold text-white tracking-tight leading-snug">
-                          {item.title}
-                        </h3>
-                        <p className="mt-3 md:mt-4 max-w-[270px] md:max-w-xs font-sans text-sm md:text-base text-white/95 leading-relaxed">
+                        {item.clientName ? (
+                          <>
+                            <div className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold tracking-wide text-white backdrop-blur-xs uppercase mb-2.5">
+                              {item.title}
+                            </div>
+                            <h3 className="font-sans text-2xl md:text-3xl lg:text-[2rem] font-bold text-white tracking-tight leading-snug">
+                              {item.clientName}
+                            </h3>
+                          </>
+                        ) : (
+                          <h3 className="font-sans text-2xl md:text-3xl lg:text-[2rem] font-bold text-white tracking-tight leading-snug">
+                            {item.title}
+                          </h3>
+                        )}
+                        <p className="mt-3 md:mt-4 max-w-[270px] md:max-w-xs font-sans text-sm md:text-base text-white/95 leading-relaxed line-clamp-2">
                           {item.description}
                         </p>
                       </div>
@@ -118,7 +130,7 @@ export function ServiceCarousel({ items, ctaLabel = "Our Services" }: { items: S
                       <div className="relative h-full w-full overflow-hidden rounded-[16px] md:rounded-[20px] bg-panel">
                         <MediaImage
                           src={item.image}
-                          alt={item.title}
+                          alt={item.clientName ? `${item.clientName} - ${item.title}` : item.title}
                           sizes="(min-width: 1024px) 450px, 40vw"
                           className="object-cover"
                         />
@@ -129,7 +141,7 @@ export function ServiceCarousel({ items, ctaLabel = "Our Services" }: { items: S
                   <button
                     type="button"
                     onClick={() => go(i)}
-                    aria-label={`Show ${item.title}`}
+                    aria-label={`Show ${item.clientName || item.title}`}
                     className="group absolute inset-0 block text-left"
                   >
                     <MediaImage
@@ -140,14 +152,21 @@ export function ServiceCarousel({ items, ctaLabel = "Our Services" }: { items: S
                     />
                     <span
                       aria-hidden
-                      className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 via-black/35 to-transparent"
+                      className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/85 via-black/40 to-transparent"
                     />
                     <span className="absolute bottom-4 left-4 right-4 flex items-center gap-3 md:bottom-6 md:left-6 md:gap-3.5">
                       <span className="flex size-10 md:size-11 shrink-0 items-center justify-center rounded-full bg-white text-ink shadow-lg transition-transform duration-300 group-hover:scale-110">
                         <ArrowUpRight className="size-4.5 transition-transform duration-300 group-hover:rotate-45" />
                       </span>
-                      <span className="font-display text-base md:text-lg lg:text-xl font-bold text-white drop-shadow-sm whitespace-nowrap">
-                        {item.title}
+                      <span className="flex flex-col min-w-0">
+                        <span className="font-display text-base md:text-lg lg:text-xl font-bold text-white drop-shadow-sm truncate">
+                          {item.clientName || item.title}
+                        </span>
+                        {item.clientName && (
+                          <span className="text-xs font-medium text-white/80 drop-shadow-xs truncate">
+                            {item.title}
+                          </span>
+                        )}
                       </span>
                     </span>
                   </button>

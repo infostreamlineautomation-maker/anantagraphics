@@ -10,20 +10,21 @@ type Props = {
   align?: "left" | "center";
   as?: "h1" | "h2";
   className?: string;
+  titleClassName?: string;
 };
 
 const MotionH1 = motion.h1;
 const MotionH2 = motion.h2;
 
 /** "WHAT WE CREATE / Visual ideas, made to leave a mark. / From identity and print…" */
-export function SectionHeading({ eyebrow, title, lead, align = "center", as: Tag = "h2", className = "" }: Props) {
+export function SectionHeading({ eyebrow, title, lead, align = "center", as: Tag = "h2", className = "", titleClassName = "" }: Props) {
   const centered = align === "center";
   const titleProps = {
     initial: { opacity: 0, y: 18 },
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true, margin: "-40px" },
     transition: { duration: 0.7, delay: eyebrow ? 0.08 : 0, ease: [0.16, 1, 0.3, 1] as const },
-    className: `font-display text-section font-bold text-brand ${eyebrow ? "mt-1.5" : ""}`,
+    className: `font-display text-section font-bold text-brand ${eyebrow ? "mt-1.5" : ""} ${titleClassName}`.trim(),
   };
 
   return (

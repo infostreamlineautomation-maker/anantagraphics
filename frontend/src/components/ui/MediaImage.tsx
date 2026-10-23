@@ -15,7 +15,7 @@ type Props = {
  * so layouts keep their shape while content is still being added in the CMS.
  */
 export function MediaImage({ src, alt, sizes, className = "", preload }: Props) {
-  if (!src) {
+  if (!src || src.includes("instagram.com") || src.includes("instagr.am")) {
     return <div aria-hidden className={`absolute inset-0 bg-linear-to-br from-line to-panel ${className}`} />;
   }
   return <Image src={mediaUrl(src)} alt={alt} fill sizes={sizes} preload={preload} className={`object-cover ${className}`} />;

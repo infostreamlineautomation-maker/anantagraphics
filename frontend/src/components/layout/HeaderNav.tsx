@@ -91,7 +91,16 @@ export function HeaderNav({ brand, contact, socials }: Props) {
           className={`fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] flex-col overflow-y-auto bg-brand p-5 text-white shadow-2xl transition-transform duration-300 ease-out ${open ? "translate-x-0" : "-translate-x-full"}`}
         >
           <div className="flex items-center justify-between border-b border-white/15 pb-4">
-            <Image src={mediaUrl(brand.logo_badge)} alt={brand.name} width={112} height={112} className="size-14" />
+            <Link href="/" onClick={() => setOpen(false)} aria-label={`${brand.name} home`} className="inline-block">
+              <Image
+                src={mediaUrl(brand.logo)}
+                alt={brand.name}
+                width={900}
+                height={239}
+                sizes="180px"
+                className="h-8 md:h-9 w-auto max-w-[170px] object-contain brightness-0 invert"
+              />
+            </Link>
             <button type="button" onClick={() => setOpen(false)} aria-label="Close menu" className="flex size-10 items-center justify-center rounded-full hover:bg-white/10">
               <CloseIcon className="size-6" />
             </button>

@@ -21,14 +21,17 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: SECURITY_HEADERS }];
   },
-  cacheComponents: true,
   experimental: {
-    // The CMS renders behind a browser-side session check, so only validate segments that opt in
-    instantInsights: { validationLevel: "manual-warning" },
+    agentUpgrade: false,
   },
+
   images: {
     // Media lives in backend/uploads and is served by the admin API host
     remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+      },
       {
         protocol: apiUrl.protocol.replace(":", "") as "http" | "https",
         hostname: apiUrl.hostname,

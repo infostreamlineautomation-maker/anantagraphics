@@ -23,6 +23,7 @@ class ServiceOut(BaseModel):
     model_config = ORM
     id: int
     title: str
+    client_name: str | None = None
     description: str | None
     image: str | None
     link: str | None
@@ -186,6 +187,7 @@ class ProjectAdmin(ProjectBase):
 
 class ServiceCreate(BaseModel):
     title: str = Field(min_length=1, max_length=120)
+    client_name: str | None = Field(default=None, max_length=120)
     description: str | None = Field(default=None, max_length=1000)
     image: MediaPath = None
     link: Link = None
@@ -194,6 +196,7 @@ class ServiceCreate(BaseModel):
 
 class ServiceUpdate(BaseModel):
     title: str | None = Field(default=None, min_length=1, max_length=120)
+    client_name: str | None = Field(default=None, max_length=120)
     description: str | None = Field(default=None, max_length=1000)
     image: MediaPath = None
     link: Link = None

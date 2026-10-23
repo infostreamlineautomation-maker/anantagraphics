@@ -91,7 +91,8 @@ export function GalleryField({ label, value, onChange, hint }: { label: string; 
                       </div>
                     </>
                   ) : (
-                    <Image src={mediaUrl(url)} alt="" fill sizes="200px" className="object-cover" />
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={mediaUrl(url)} alt="" className="size-full object-cover" />
                   )}
                 </div>
                 <div className="flex items-center justify-between px-2 py-1.5 text-xs bg-white">

@@ -78,7 +78,8 @@ export function MediaPicker({ open, onClose, onPick }: { open: boolean; onClose:
                         <span className="text-[10px] uppercase font-semibold tracking-wider text-white/70">Video</span>
                       </div>
                     ) : (
-                      <Image src={mediaUrl(m.url)} alt={m.alt_text} fill sizes="160px" className="object-cover" />
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={mediaUrl(m.url)} alt={m.alt_text} className="size-full object-cover" />
                     )}
                   </div>
                   <p className="truncate px-2 py-1.5 text-xs text-muted group-hover:text-ink">{m.filename}</p>

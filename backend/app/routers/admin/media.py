@@ -106,3 +106,18 @@ def delete_media(
     db.delete(media)
     db.commit()
     delete_file(media.url)
+
+
+class InstagramFetchIn(MediaUpdate.__base__):
+    url: str
+
+
+@router.post("/instagram-fetch")
+def fetch_instagram_reel(payload: InstagramFetchIn):
+    if not payload.url:
+        raise HTTPException(400, "Instagram URL is required")
+    try:
+        from app.services.instagram import download_instagram_media
+        return download_instagram_media(payload.url)
+    except Exception as exc:
+        raise HTTPException(400, f"Could not download Instagram media: {exc}")

@@ -12,11 +12,20 @@ import { items, safeHref, section, str, strList } from "@/lib/content";
 
 export const metadata: Metadata = { alternates: { canonical: "/" } };
 
+const DEFAULT_SHOWCASE = [
+  { number: "01", title: "Printing & Designing", href: "/our-work/printed-materials", image_alt: "Fine printing, catalog, brochure and stationery designing" },
+  { number: "02", title: "Packaging Solutions", href: "/our-work/packaging", image_alt: "Custom printed boxes and branded product packaging" },
+  { number: "03", title: "Signages Solutions", href: "/our-work/signage", image_alt: "Architectural, retail and outdoor signage solutions" },
+  { number: "04", title: "Corporate Gifting", href: "/our-work/corporate-gifting", image_alt: "Brandwater luxury corporate gifting kit" },
+  { number: "05", title: "Overseas Work", href: "/our-work/overseas-work", image_alt: "International brand printing and export packaging solutions" },
+];
+
 export default async function HomePage() {
   const [sections, services, clients, settings] = await Promise.all([getPage("home"), getServices(), getClients(), getSettings()]);
   const hero = section(sections, "hero");
   const intro = section(sections, "intro");
-  const showcase = items(section(sections, "showcase"));
+  const rawShowcase = items(section(sections, "showcase"));
+  const showcase = rawShowcase.length > 0 ? rawShowcase : DEFAULT_SHOWCASE;
   const servicesIntro = section(sections, "services");
   const clientsIntro = section(sections, "clients");
   const featured = items(section(sections, "featured"));
@@ -60,9 +69,10 @@ export default async function HomePage() {
           <SectionHeading eyebrow={str(servicesIntro, "eyebrow")} title={str(servicesIntro, "title")} />
           <div className="mt-8 md:mt-10">
             <ServiceCarousel
-              ctaLabel={str(servicesIntro, "cta_label", "Our Services")}
+              ctaLabel={str(servicesIntro, "cta_label", "View Project Work")}
               items={services.map((s) => ({
                 title: s.title,
+                clientName: s.client_name,
                 description: s.description ?? "",
                 image: s.image,
                 href: safeHref(s.link ?? "/our-work", "/our-work"),

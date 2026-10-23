@@ -19,10 +19,17 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: SECURITY_HEADERS }];
   },
+  experimental: {
+    agentUpgrade: false,
+  },
   cacheComponents: true,
   images: {
     // Media lives in backend/uploads and is served by the API host
     remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+      },
       {
         protocol: apiUrl.protocol.replace(":", "") as "http" | "https",
         hostname: apiUrl.hostname,

@@ -28,7 +28,10 @@ export default function ServicesPage() {
             {s.image && <Image src={mediaUrl(s.image)} alt="" fill sizes="56px" className="object-cover" />}
           </div>
           <div className="min-w-0">
-            <p className="font-medium">{s.title}</p>
+            <p className="font-medium">
+              {s.client_name ? `${s.client_name} — ` : ""}
+              {s.title}
+            </p>
             <p className="line-clamp-1 text-sm text-muted">{s.description || "No description"}</p>
           </div>
         </div>
@@ -39,6 +42,7 @@ export default function ServicesPage() {
 
 function ServiceForm({ item, onCancel, onSaved }: ItemFormProps<Service>) {
   const [title, setTitle] = useState(item?.title ?? "");
+  const [clientName, setClientName] = useState(item?.client_name ?? "");
   const [description, setDescription] = useState(item?.description ?? "");
   const [image, setImage] = useState<string | null>(item?.image ?? null);
   const [link, setLink] = useState(item?.link ?? "");
@@ -52,6 +56,7 @@ function ServiceForm({ item, onCancel, onSaved }: ItemFormProps<Service>) {
     try {
       const saved = await saveItem("/services", item, {
         title: title.trim(),
+        client_name: orNull(clientName.trim()),
         description: orNull(description),
         image,
         link: orNull(link.trim()),
@@ -69,13 +74,16 @@ function ServiceForm({ item, onCancel, onSaved }: ItemFormProps<Service>) {
   return (
     <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_auto]">
       <div className="space-y-4">
-        <Field label="Title *">
+        <Field label="Service Title *" hint="e.g. Designing & Printing, Packaging Solutions">
           <Input value={title} maxLength={120} onChange={(e) => setTitle(e.target.value)} autoFocus />
         </Field>
-        <Field label="Description" hint="Shown on the expanded red card.">
+        <Field label="Client Name" hint="e.g. Kalamandir Jewellers, Mahalaxmi Juice">
+          <Input value={clientName} maxLength={120} placeholder="Client name" onChange={(e) => setClientName(e.target.value)} />
+        </Field>
+        <Field label="Description (2 lines)" hint="Shown on the expanded red card.">
           <Textarea rows={3} value={description} maxLength={1000} onChange={(e) => setDescription(e.target.value)} />
         </Field>
-        <Field label="Link" hint="Where “Our Services” goes, e.g. /our-work/packaging">
+        <Field label="Link" hint="Where “View Project Work” goes, e.g. /our-work/packaging">
           <Input value={link} placeholder="/our-work" onChange={(e) => setLink(e.target.value)} />
         </Field>
       </div>

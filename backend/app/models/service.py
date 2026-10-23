@@ -11,6 +11,7 @@ class Service(TimestampMixin, Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(120))
+    client_name: Mapped[str | None] = mapped_column(String(120), nullable=True)
     description: Mapped[str | None] = mapped_column(Text)
     image: Mapped[str | None] = mapped_column(String(500))
     link: Mapped[str | None] = mapped_column(String(300))  # site path, e.g. /our-work/packaging

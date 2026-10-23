@@ -12,6 +12,7 @@ import { errorMessage, formatDate, useResource, useUnsavedChanges } from "@/lib/
 import { SITE_URL } from "@/lib/media";
 import type { JsonObject, PageSection } from "@/lib/types";
 
+import { FeaturedStripEditor } from "./FeaturedStripEditor";
 import { JsonContentEditor } from "./JsonContentEditor";
 
 export const PAGE_META: Record<string, { title: string; path: string }> = {
@@ -110,7 +111,11 @@ function SectionForm({ section, onDirtyChange }: { section: PageSection; onDirty
         </div>
       }
     >
-      <JsonContentEditor value={content} onChange={change} />
+      {section.key === "featured" ? (
+        <FeaturedStripEditor value={content} onChange={change} />
+      ) : (
+        <JsonContentEditor value={content} onChange={change} />
+      )}
       {dirty && (
         <div className="mt-5 flex justify-end gap-3 border-t border-line pt-4">
           <Button

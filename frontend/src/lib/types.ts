@@ -39,6 +39,7 @@ export type Faq = { id?: number; question: string; answer: string };
 export type Service = {
   id: number;
   title: string;
+  client_name?: string | null;
   description: string | null;
   image: string | null;
   link: string | null;

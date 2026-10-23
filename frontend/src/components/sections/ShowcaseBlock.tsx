@@ -31,34 +31,34 @@ type CategoryConfig = {
 
 const SHOWCASE_DEFAULTS: Record<string, CategoryConfig> = {
   "01": {
-    heroImage: "/uploads/figma/showcase/brand-identity-hero.jpg",
-    gallery: [
-      { image: "/uploads/figma/showcase/brand-identity-card1.jpg", alt: "LUXE knitwear brand label" },
-      { image: "/uploads/figma/showcase/brand-identity-card2.jpg", alt: "LUXE retail storefront signage" },
-      { image: "/uploads/figma/work-categories/tags-labels.jpg", alt: "Brand identity tags & labels" },
-      { image: "/uploads/figma/projects/custom-retail-packaging.jpg", alt: "Custom retail identity packaging" },
-    ],
-    bgColor: "#45231a",
-  },
-  "02": {
     heroImage: "/uploads/figma/showcase/print-editorial-hero.jpg",
     gallery: [
       { image: "/uploads/figma/showcase/print-editorial-card1.jpg", alt: "Men's Folio editorial photos" },
-      { image: "/uploads/figma/showcase/print-editorial-card2.jpg", alt: "Men's Folio layout design" },
+      { image: "/uploads/figma/showcase/print-editorial-card2.jpg", alt: "Editorial layout design" },
       { image: "/uploads/figma/work-categories/printed-materials.jpg", alt: "Fine luxury foiled brochures" },
       { image: "/uploads/figma/services/designing-printing.jpg", alt: "Editorial booklets & catalogs" },
     ],
     bgColor: "#742423",
   },
-  "03": {
-    heroImage: "/uploads/figma/showcase/events-experiences-hero.jpg",
+  "02": {
+    heroImage: "/uploads/figma/projects/custom-printed-boxes.jpg",
     gallery: [
-      { image: "/uploads/figma/showcase/events-experiences-card1.jpg", alt: "Charlotte Jackson luxury stationery" },
-      { image: "/uploads/figma/showcase/events-experiences-card2.jpg", alt: "Exhibition collateral and invites" },
-      { image: "/uploads/figma/work-categories/signage.jpg", alt: "Event wayfinding & signage" },
-      { image: "/uploads/figma/about/hero-bazaar-tags.jpg", alt: "Bazaar experiential passes" },
+      { image: "/uploads/figma/work-categories/packaging.jpg", alt: "Luxury rigid packaging boxes" },
+      { image: "/uploads/figma/projects/custom-retail-packaging.jpg", alt: "Custom retail identity packaging" },
+      { image: "/uploads/figma/projects/ecommerce-packaging.jpg", alt: "E-commerce custom mailer boxes" },
+      { image: "/uploads/figma/work-categories/pouches.jpg", alt: "Custom flexible stand-up pouches" },
     ],
-    bgColor: "#c8302b",
+    bgColor: "#45231a",
+  },
+  "03": {
+    heroImage: "/uploads/figma/work-categories/signage.jpg",
+    gallery: [
+      { image: "/uploads/figma/home/hero-shopfront.jpg", alt: "Retail shopfront window graphics and 3D signage" },
+      { image: "/uploads/figma/showcase/brand-identity-card2.jpg", alt: "LUXE storefront retail signage" },
+      { image: "/uploads/figma/showcase/events-experiences-card2.jpg", alt: "Wayfinding and directional exhibition signs" },
+      { image: "/uploads/figma/work-categories/signage.jpg", alt: "Illuminated architectural signage" },
+    ],
+    bgColor: "#1f2937",
   },
   "04": {
     heroImage: "/uploads/figma/showcase/corporate-gifting-hero.jpg",
@@ -70,11 +70,21 @@ const SHOWCASE_DEFAULTS: Record<string, CategoryConfig> = {
     ],
     bgColor: "#1e1a17",
   },
+  "05": {
+    heroImage: "/uploads/figma/showcase/brand-identity-hero.jpg",
+    gallery: [
+      { image: "/uploads/figma/showcase/brand-identity-card1.jpg", alt: "International knitwear brand label" },
+      { image: "/uploads/figma/showcase/events-experiences-card1.jpg", alt: "Charlotte Jackson international luxury stationery" },
+      { image: "/uploads/figma/projects/paper-cup-gallery-1.jpg", alt: "Global carry packaging and custom drinkware" },
+      { image: "/uploads/figma/about/hero-bazaar-tags.jpg", alt: "Bazaar experiential passes and tags" },
+    ],
+    bgColor: "#1d3557",
+  },
 };
 
 /**
  * Showcase block strictly replicating the Figma design:
- * - Pristine notched top-left title tab ("01 — Brand Identity") with inverted curves
+ * - Pristine notched top-left title tab ("01 — Printing & Designing") with inverted curves
  * - Clean left hero visual with zero text/button overlays
  * - Right column: clean stacked mockup cards with rounded corners on matching solid background
  * - Seamless, elegant vertical reel animation showing multiple mockups in motion, pausing on hover
@@ -111,11 +121,11 @@ export function ShowcaseBlock({
         className="group relative w-full aspect-[16/10] md:aspect-[2.35/1] max-h-[580px] lg:max-h-[620px] xl:max-h-[640px] overflow-hidden rounded-[18px] md:rounded-[24px] bg-panel shadow-sm transition-shadow duration-500 hover:shadow-2xl"
         style={{ backgroundColor: bgColor }}
       >
-        {/* Notched title tab with refined, un-zoomed font size and tailored proportions */}
-        <h3 className="showcase-tab absolute top-0 left-0 z-20 flex h-9 sm:h-10 md:h-[2.65rem] max-w-[85%] items-center bg-surface pr-5 pl-3.5 sm:pr-6 sm:pl-4 md:pr-7 md:pl-5 font-showcase text-[0.875rem] sm:text-[0.9375rem] md:text-[1.0625rem] leading-none whitespace-nowrap text-ink shadow-xs">
-          <span className="font-medium">{number}</span>
-          <span className="mx-2 text-faint font-normal">—</span>
-          <span>{title}</span>
+        {/* Notched title tab with larger normal global font */}
+        <h3 className="showcase-tab absolute top-0 left-0 z-20 flex h-13 sm:h-14 md:h-16 lg:h-[4.5rem] xl:h-[4.85rem] max-w-[92%] items-center bg-surface pl-4 pr-6 sm:pl-6 sm:pr-8 md:pl-8 md:pr-11 lg:pl-10 lg:pr-14 font-sans text-lg sm:text-xl md:text-2xl lg:text-[1.75rem] xl:text-[1.95rem] leading-none whitespace-nowrap text-ink shadow-sm">
+          <span className="font-semibold text-brand">{number}</span>
+          <span className="mx-2.5 sm:mx-3 text-ink/30 font-normal">—</span>
+          <span className="font-normal text-ink tracking-tight">{title}</span>
         </h3>
 
         {/* 2-Column Layout matching Figma proportions: 58% Left Hero, 42% Right Cards */}

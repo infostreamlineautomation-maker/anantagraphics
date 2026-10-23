@@ -42,6 +42,27 @@ def update_section(
     admin: AdminUser = Depends(get_current_admin),
 ):
     section = get_or_404(db, PageSection, section_id, "Section")
+    # If updating home featured section with instagram reels, auto-download missing video files
+    if section.page == "home" and section.key == "featured" and payload.content and "items" in payload.content:
+        items = payload.content.get("items")
+        if isinstance(items, list):
+            from app.services.instagram import download_instagram_media
+            for it in items:
+                if isinstance(it, dict):
+                    insta_url = it.get("instagram_url") or (it.get("href") if "instagram.com" in (it.get("href") or "") else None)
+                    if insta_url and not it.get("video_url") and not it.get("media"):
+                        try:
+                            dl = download_instagram_media(insta_url)
+                            if dl.get("video_url"):
+                                it["video_url"] = dl["video_url"]
+                                it["media"] = dl["video_url"]
+                            if dl.get("poster_url") and not it.get("poster"):
+                                it["poster"] = dl["poster_url"]
+                            if dl.get("caption") and not it.get("caption"):
+                                it["caption"] = dl["caption"]
+                        except Exception:
+                            pass
+
     changes = apply_update(section, payload)
     if changes:
         # Content diffs can be large; log which fields changed, not the whole JSON

@@ -94,7 +94,7 @@ export default async function StyleguidePage() {
       </Block>
 
       <Block title="Showcase block">
-        <ShowcaseBlock number="01" title="Brand Identity" image="/uploads/figma/home/showcase-brand-identity.jpg" alt="LUXE brand identity" />
+        <ShowcaseBlock number="01" title="Printing & Designing" image="/uploads/figma/showcase/print-editorial-hero.jpg" alt="Printing & Designing" />
       </Block>
 
       <Block title="Service carousel">

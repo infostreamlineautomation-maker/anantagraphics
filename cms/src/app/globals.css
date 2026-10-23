@@ -12,3 +12,9 @@ body {
   outline: 2px solid var(--color-brand);
   outline-offset: 2px;
 }
+
+/* Suppress Next.js development overlay & insight popups */
+nextjs-portal {
+  display: none !important;
+}
+
