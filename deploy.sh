@@ -35,11 +35,13 @@ fail()  { printf '\033[1;31m[error]\033[0m  %s\n' "$*" >&2; exit 1; }
 START_TIME=$(date +%s)
 FORCE_ALL=0
 QUICK_MODE=0
+SEED_SYNC=0
 
 for arg in "$@"; do
   case "$arg" in
     --all|-a|--force|-f) FORCE_ALL=1 ;;
     --quick|-q)          QUICK_MODE=1 ;;
+    --seed|-s)           SEED_SYNC=1 ;;
     --help|-h)
       echo "Ananta Graphics VPS Deployment Tool"
       echo "Usage: ./deploy.sh [OPTIONS]"
@@ -47,6 +49,7 @@ for arg in "$@"; do
       echo "Options:"
       echo "  --all, -a     Force full rebuild & restart of all services"
       echo "  --quick, -q   Skip Next.js build; apply migrations and restart APIs"
+      echo "  --seed, -s    Synchronize latest seed data, services, reels & media library"
       echo "  --help, -h    Show this help message"
       exit 0
       ;;
@@ -140,7 +143,7 @@ fi
 (( QUICK_MODE )) && { FRONTEND_CHANGED=0; CMS_CHANGED=0; info "(--quick flag: skipping frontend & CMS builds)"; }
 
 # ---------------------------------------------------------------- 4. backend updates
-if (( BACKEND_CHANGED || MIGRATIONS_CHANGED || PIP_CHANGED )); then
+if (( BACKEND_CHANGED || MIGRATIONS_CHANGED || PIP_CHANGED || FORCE_ALL || SEED_SYNC )); then
   info "[4/7] Updating Backend & Database..."
   cd "$BACKEND"
 
@@ -152,7 +155,7 @@ if (( BACKEND_CHANGED || MIGRATIONS_CHANGED || PIP_CHANGED )); then
   info "  -> Running database migrations (alembic upgrade head)..."
   ./venv/bin/alembic upgrade head
 
-  info "  -> Synchronizing seed data & CMS defaults..."
+  info "  -> Synchronizing seed data, services, reels & media library..."
   ./venv/bin/python -m app.seed
   ok "Backend & Database updated."
 else

@@ -6,10 +6,12 @@ __pycache__/
 backend/venv/
 backend/.venv/
 backend/.env
-# CMS uploads stay on the server; Figma seed media is versioned so deploys get it
+# CMS uploads stay on the server; Figma and seeded media (reels, services) are versioned so deploys get it
 backend/uploads/*
 !backend/uploads/.gitkeep
 !backend/uploads/figma/
+!backend/uploads/reels/
+!backend/uploads/services/
 
 # Node / Next (each app also has its own .gitignore)
 node_modules/
