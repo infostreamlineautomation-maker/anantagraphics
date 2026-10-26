@@ -5,6 +5,8 @@ import { AllWorkGrid } from "@/components/sections/AllWorkGrid";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { getAllProjects, getWorkCategories } from "@/lib/api";
 
+export const instant = false;
+
 export const metadata: Metadata = {
   title: "All Work | Ananta Graphics",
   description: "Browse all portfolio projects across printing, packaging, signage, corporate gifting and overseas work.",

@@ -8,6 +8,8 @@ import { mediaUrl } from "@/lib/media";
 
 import "./globals.css";
 
+export const instant = false;
+
 export async function generateMetadata(): Promise<Metadata> {
   const { brand, seo } = await getSettings();
   return {

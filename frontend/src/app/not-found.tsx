@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { ButtonLink } from "@/components/ui/Button";
 
+export const instant = false;
 export const metadata: Metadata = { title: "Page not found", robots: { index: false } };
 
 export default function NotFound() {

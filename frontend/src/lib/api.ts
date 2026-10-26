@@ -61,8 +61,7 @@ async function get<T>(path: string): Promise<Result<T>> {
   try {
     const res = await fetch(`${API}${path}`, {
       headers: { Accept: "application/json" },
-      signal: AbortSignal.timeout(15000),
-      cache: "no-store",
+      signal: AbortSignal.timeout(2500),
     });
     if (!res.ok) {
       if (res.status !== 404) console.warn(`[API] ${path} returned ${res.status}`);
@@ -97,6 +96,7 @@ function safeLife(r: Result<unknown>) {
 }
 
 export async function getSettings(): Promise<Settings> {
+  "use cache";
   safeTag("settings");
   const r = await get<Partial<Settings>>("/settings");
   safeLife(r);
@@ -114,6 +114,7 @@ export async function getSettings(): Promise<Settings> {
 }
 
 export async function getPage(page: PageKey): Promise<Sections> {
+  "use cache";
   safeTag(`page:${page}`);
   const r = await get<{ sections: Sections }>(`/pages/${page}`);
   safeLife(r);
@@ -363,6 +364,7 @@ const FALLBACK_CATEGORIES: Record<string, WorkCategoryDetail> = {
 };
 
 export async function getWorkCategories(): Promise<WorkCategoryCard[]> {
+  "use cache";
   safeTag("work");
   const r = await get<WorkCategoryCard[]>("/work-categories");
   safeLife(r);
@@ -635,6 +637,7 @@ const FALLBACK_PROJECTS: Record<string, ProjectDetail> = {
 };
 
 export async function getWorkCategory(slug: string): Promise<WorkCategoryDetail | null> {
+  "use cache";
   safeTag("work", `work-category:${slug}`);
   const r = await get<WorkCategoryDetail>(`/work-categories/${encodeURIComponent(slug)}`);
   safeLife(r);
@@ -643,6 +646,7 @@ export async function getWorkCategory(slug: string): Promise<WorkCategoryDetail 
 }
 
 export async function getProject(slug: string): Promise<ProjectDetail | null> {
+  "use cache";
   safeTag("projects", `project:${slug}`);
   const r = await get<ProjectDetail>(`/projects/${encodeURIComponent(slug)}`);
   safeLife(r);
@@ -651,6 +655,7 @@ export async function getProject(slug: string): Promise<ProjectDetail | null> {
 }
 
 export async function getAllProjects(): Promise<ExploreCard[]> {
+  "use cache";
   safeTag("projects");
   const r = await get<ExploreCard[]>("/projects");
   safeLife(r);
@@ -674,6 +679,7 @@ export async function getAllProjects(): Promise<ExploreCard[]> {
 }
 
 export async function getServices(): Promise<Service[]> {
+  "use cache";
   safeTag("services");
   const r = await get<Service[]>("/services");
   safeLife(r);
@@ -681,6 +687,7 @@ export async function getServices(): Promise<Service[]> {
 }
 
 export async function getFeaturedProjects(): Promise<ExploreCard[]> {
+  "use cache";
   safeTag("projects", "home");
   const r = await get<ExploreCard[]>("/featured-projects");
   safeLife(r);
@@ -725,6 +732,7 @@ const FALLBACK_CLIENTS: Client[] = [
 ];
 
 export async function getClients(): Promise<Client[]> {
+  "use cache";
   safeTag("clients");
   const r = await get<Client[]>("/clients");
   safeLife(r);
@@ -732,6 +740,7 @@ export async function getClients(): Promise<Client[]> {
 }
 
 export async function getFaqs(): Promise<Faq[]> {
+  "use cache";
   safeTag("faqs");
   const r = await get<Faq[]>("/faqs");
   safeLife(r);

@@ -6,6 +6,8 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { getPage, getWorkCategories } from "@/lib/api";
 import { pad, section, str } from "@/lib/content";
 
+export const instant = false;
+
 export const metadata: Metadata = {
   alternates: { canonical: "/our-work" },
   title: "Our Work",

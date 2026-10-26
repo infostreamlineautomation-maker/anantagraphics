@@ -11,6 +11,8 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { getClients, getFeaturedProjects, getPage, getSettings } from "@/lib/api";
 import { items, safeHref, section, str, strList } from "@/lib/content";
 
+export const instant = false;
+
 export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 const DEFAULT_SHOWCASE = [

@@ -164,6 +164,10 @@ fi
 
 # ---------------------------------------------------------------- 5. frontend & cms builds
 if (( FRONTEND_CHANGED )); then
+  # Ensure APIs are running so Next.js static prerender can fetch live data from :8100
+  info "Starting APIs before frontend build..."
+  pm2 startOrReload "$ECOSYSTEM" --only ag-api,ag-admin-api --update-env 2>/dev/null || true
+  sleep 2
   info "[5/7] Updating Frontend Website..."
   cd "$FRONTEND"
   if (( FRONTEND_PKG_CHANGED )); then

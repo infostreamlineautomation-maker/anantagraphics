@@ -16,6 +16,7 @@ import { getSettings } from "@/lib/api";
 
 // Internal preview of the design system (phase 2). Images are filled in from the CMS later,
 // so media slots show neutral placeholders here.
+export const instant = false;
 export const metadata: Metadata = { title: "Styleguide", robots: { index: false } };
 
 const COLORS = [

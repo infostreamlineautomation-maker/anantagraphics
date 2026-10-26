@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { LegalPage } from "@/components/ui/LegalPage";
 
+export const instant = false;
 export const metadata: Metadata = { title: "Cookie Policy", alternates: { canonical: "/cookies" } };
 
 export default function CookiesPage() {

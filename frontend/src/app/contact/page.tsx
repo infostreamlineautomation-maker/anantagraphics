@@ -9,6 +9,8 @@ import { FadeIn } from "@/components/ui/Motion";
 import { getPage, getServices, getSettings } from "@/lib/api";
 import { section, str } from "@/lib/content";
 
+export const instant = false;
+
 export const metadata: Metadata = {
   alternates: { canonical: "/contact" },
   title: "Contact Us",

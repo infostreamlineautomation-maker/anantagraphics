@@ -12,6 +12,8 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { getClients, getFaqs, getPage, getSettings } from "@/lib/api";
 import { items, obj, safeHref, section, str, strList } from "@/lib/content";
 
+export const instant = false;
+
 export const metadata: Metadata = {
   alternates: { canonical: "/about" },
   title: "About Us",
