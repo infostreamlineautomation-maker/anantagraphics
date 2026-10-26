@@ -98,24 +98,13 @@ export default async function HomePage() {
           <div className="mt-8 md:mt-10">
             <ServiceCarousel
               ctaLabel={str(servicesIntro, "cta_label", "Our Services")}
-              items={featuredProjects.map((p) => {
-                const serviceLabel =
-                  p.category_slug === "printed-materials"
-                    ? "Designing & Printing"
-                    : p.category_slug === "signage"
-                    ? "Signages Solutions"
-                    : p.category_slug === "packaging"
-                    ? "Packaging Solutions"
-                    : p.category_name;
-
-                return {
-                  title: serviceLabel,
-                  clientName: p.client || p.title,
-                  description: p.description || p.short_description || "",
-                  image: p.cover_image || p.intro_image,
-                  href: `/our-work/${p.category_slug}/${p.slug}`,
-                };
-              })}
+              items={featuredProjects.map((p) => ({
+                title: p.category_name || "Our Services",
+                clientName: p.client || p.title,
+                description: p.description || p.short_description || "",
+                image: p.cover_image || p.intro_image,
+                href: `/our-work/${p.category_slug}/${p.slug}`,
+              }))}
             />
           </div>
         </section>

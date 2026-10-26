@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { motion } from "motion/react";
 
@@ -21,6 +22,11 @@ type Props = Pick<Settings, "brand" | "contact" | "socials">;
 export function HeaderNav({ brand, contact, socials }: Props) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Lock page scroll and listen for Esc while the drawer is open
   useEffect(() => {
@@ -78,67 +84,71 @@ export function HeaderNav({ brand, contact, socials }: Props) {
         </div>
       </div>
 
-      {/* Mobile drawer */}
-      <div className="pointer-events-auto md:hidden">
-        <div
-          aria-hidden
-          onClick={() => setOpen(false)}
-          className={`fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${open ? "opacity-100" : "pointer-events-none opacity-0"}`}
-        />
-        <nav
-          aria-label="Mobile"
-          inert={!open}
-          className={`fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] flex-col overflow-y-auto bg-brand p-5 text-white shadow-2xl transition-transform duration-300 ease-out ${open ? "translate-x-0" : "-translate-x-full"}`}
-        >
-          <div className="flex items-center justify-between border-b border-white/15 pb-4">
-            <Link href="/" onClick={() => setOpen(false)} aria-label={`${brand.name} home`} className="inline-block">
-              <Image
-                src={mediaUrl(brand.logo)}
-                alt={brand.name}
-                width={900}
-                height={239}
-                sizes="180px"
-                className="h-8 md:h-9 w-auto max-w-[170px] object-contain brightness-0 invert"
-              />
-            </Link>
-            <button type="button" onClick={() => setOpen(false)} aria-label="Close menu" className="flex size-10 items-center justify-center rounded-full hover:bg-white/10">
-              <CloseIcon className="size-6" />
-            </button>
-          </div>
-          <ul className="mt-5 flex flex-col gap-1.5">
-            {NAV_LINKS.map((l) => {
-              const active = isActivePath(pathname, l.href);
-              return (
-                <li key={l.href}>
-                  <Link
-                    href={l.href}
-                    onClick={() => setOpen(false)}
-                    aria-current={active ? "page" : undefined}
-                    className={`block rounded-xl px-4 py-2.5 font-sans text-base font-medium transition-colors ${active ? "bg-white text-brand" : "hover:bg-white/10"}`}
-                  >
-                    {l.label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-          <div className="mt-auto space-y-2.5 border-t border-white/15 pt-5 font-sans text-sm text-white/90">
-            <SocialIcons socials={socials} size="sm" />
-            {contact.phone && (
-              <a href={phoneHref(contact.phone)} className="flex items-center gap-2.5 pt-1 hover:text-white">
-                <PhoneIcon className="size-4 shrink-0" />
-                {formatPhone(contact.phone)}
-              </a>
-            )}
-            {contact.email && (
-              <a href={`mailto:${contact.email}`} className="flex items-center gap-2.5 break-all hover:text-white">
-                <MailIcon className="size-4 shrink-0" />
-                {contact.email}
-              </a>
-            )}
-          </div>
-        </nav>
-      </div>
+      {/* Mobile drawer portaled to body to guarantee it sits above all page stacking contexts */}
+      {mounted &&
+        createPortal(
+          <div className="pointer-events-auto md:hidden">
+            <div
+              aria-hidden
+              onClick={() => setOpen(false)}
+              className={`fixed inset-0 z-[80] bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${open ? "opacity-100" : "pointer-events-none opacity-0"}`}
+            />
+            <nav
+              aria-label="Mobile"
+              inert={!open}
+              className={`fixed inset-y-0 left-0 z-[90] flex w-72 max-w-[85vw] flex-col overflow-y-auto bg-brand p-5 text-white shadow-2xl transition-transform duration-300 ease-out ${open ? "translate-x-0" : "-translate-x-full"}`}
+            >
+              <div className="flex items-center justify-between border-b border-white/15 pb-4">
+                <Link href="/" onClick={() => setOpen(false)} aria-label={`${brand.name} home`} className="inline-block">
+                  <Image
+                    src={mediaUrl(brand.logo)}
+                    alt={brand.name}
+                    width={900}
+                    height={239}
+                    sizes="180px"
+                    className="h-8 md:h-9 w-auto max-w-[170px] object-contain brightness-0 invert"
+                  />
+                </Link>
+                <button type="button" onClick={() => setOpen(false)} aria-label="Close menu" className="flex size-10 items-center justify-center rounded-full hover:bg-white/10">
+                  <CloseIcon className="size-6" />
+                </button>
+              </div>
+              <ul className="mt-5 flex flex-col gap-1.5">
+                {NAV_LINKS.map((l) => {
+                  const active = isActivePath(pathname, l.href);
+                  return (
+                    <li key={l.href}>
+                      <Link
+                        href={l.href}
+                        onClick={() => setOpen(false)}
+                        aria-current={active ? "page" : undefined}
+                        className={`block rounded-xl px-4 py-2.5 font-sans text-base font-medium transition-colors ${active ? "bg-white text-brand" : "hover:bg-white/10"}`}
+                      >
+                        {l.label}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+              <div className="mt-auto space-y-2.5 border-t border-white/15 pt-5 font-sans text-sm text-white/90">
+                <SocialIcons socials={socials} size="sm" />
+                {contact.phone && (
+                  <a href={phoneHref(contact.phone)} className="flex items-center gap-2.5 pt-1 hover:text-white">
+                    <PhoneIcon className="size-4 shrink-0" />
+                    {formatPhone(contact.phone)}
+                  </a>
+                )}
+                {contact.email && (
+                  <a href={`mailto:${contact.email}`} className="flex items-center gap-2.5 break-all hover:text-white">
+                    <MailIcon className="size-4 shrink-0" />
+                    {contact.email}
+                  </a>
+                )}
+              </div>
+            </nav>
+          </div>,
+          document.body
+        )}
     </>
   );
 }

@@ -47,10 +47,10 @@ export function ServiceCarousel({ items, ctaLabel = "Our Services" }: { items: S
       <div className="mb-4 flex items-center justify-between gap-3 px-1">
         <Link
           href="/our-work/all"
-          className="group inline-flex items-center gap-1.5 font-mono text-xs sm:text-sm uppercase tracking-wider text-muted hover:text-brand transition-colors font-semibold"
+          className="group inline-flex items-center gap-2 rounded-full border border-brand/25 bg-brand/5 px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-sans font-semibold text-brand shadow-2xs transition-all duration-200 hover:border-brand hover:bg-brand hover:text-white hover:shadow-xs active:scale-95"
         >
           <span>View All Work</span>
-          <span className="text-base transition-transform duration-200 group-hover:translate-x-1">→</span>
+          <span className="text-sm sm:text-base transition-transform duration-200 group-hover:translate-x-1">→</span>
         </Link>
 
         {/* Carousel Navigation Arrows with Magnetic hover */}

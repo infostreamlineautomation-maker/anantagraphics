@@ -86,19 +86,20 @@ export default async function ProjectPage({ params }: Props) {
   return (
     <article className="container-site pt-3 pb-14 md:pb-20">
       {/* Top Navigation / Breadcrumbs */}
-      <div className="mb-4 sm:mb-6 flex items-center justify-between">
+      <div className="mb-4 sm:mb-6 flex items-center justify-between gap-3">
         <Link
           href={`/our-work/${p.category.slug}`}
-          className="group inline-flex items-center gap-2 font-mono text-xs sm:text-sm uppercase tracking-wider text-muted hover:text-brand transition-colors font-medium"
+          className="group inline-flex items-center gap-1.5 rounded-full border border-line bg-surface/90 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-sans font-medium text-ink shadow-2xs backdrop-blur-xs transition-all duration-200 hover:border-brand hover:bg-brand hover:text-white active:scale-95"
         >
           <span className="transition-transform duration-200 group-hover:-translate-x-1">←</span>
-          <span>Back to {p.category.name}</span>
+          <span className="truncate max-w-[150px] sm:max-w-none">{p.category.name}</span>
         </Link>
         <Link
           href="/our-work/all"
-          className="text-xs sm:text-sm font-sans font-medium text-muted hover:text-brand transition-colors"
+          className="group inline-flex items-center gap-1.5 rounded-full border border-brand/25 bg-brand/5 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-sans font-semibold text-brand shadow-2xs transition-all duration-200 hover:border-brand hover:bg-brand hover:text-white active:scale-95"
         >
-          View all projects →
+          <span>All projects</span>
+          <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
         </Link>
       </div>
 

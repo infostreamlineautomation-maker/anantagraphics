@@ -21,11 +21,11 @@ export function AllWorkGrid({ projects, categories }: Props) {
   return (
     <div>
       {/* Category Filter Tabs */}
-      <div className="mb-8 flex flex-wrap items-center gap-2 pb-3 border-b border-line/60">
+      <div className="mb-6 sm:mb-8 flex items-center gap-2 pb-3 overflow-x-auto scrollbar-none sm:flex-wrap border-b border-line/60">
         <button
           type="button"
           onClick={() => setSelectedCategory("all")}
-          className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all cursor-pointer ${
+          className={`px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all cursor-pointer ${
             selectedCategory === "all"
               ? "bg-brand text-white shadow-xs"
               : "bg-panel text-ink-soft hover:bg-line/40 hover:text-ink"
@@ -40,7 +40,7 @@ export function AllWorkGrid({ projects, categories }: Props) {
               key={c.slug}
               type="button"
               onClick={() => setSelectedCategory(c.slug)}
-              className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all cursor-pointer ${
+              className={`px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all cursor-pointer ${
                 selectedCategory === c.slug
                   ? "bg-brand text-white shadow-xs"
                   : "bg-panel text-ink-soft hover:bg-line/40 hover:text-ink"

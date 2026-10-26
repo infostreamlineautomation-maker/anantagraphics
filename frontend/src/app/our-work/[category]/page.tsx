@@ -35,26 +35,28 @@ export default async function WorkCategoryPage({ params }: PageProps<"/our-work/
 
   return (
     <section className="container-site pt-4 pb-14 md:pb-20">
-      {/* Header layout: Back arrow on the left side, Heading big and centered */}
+      {/* Header layout: Back arrow on the left side, All projects on the right side */}
       <div className="relative mb-6 md:mb-10">
-        <div className="md:absolute md:left-0 md:top-2.5 md:z-10 mb-3 md:mb-0">
-          <Link
-            href="/our-work"
-            className="group inline-flex items-center gap-2 font-mono text-xs sm:text-sm uppercase tracking-wider text-muted hover:text-brand transition-colors font-medium"
-          >
-            <span className="text-base sm:text-lg transition-transform duration-200 group-hover:-translate-x-1">←</span>
-            <span>Categories</span>
-          </Link>
-        </div>
+        <div className="flex items-center justify-between gap-3 mb-4 md:mb-0 md:absolute md:inset-x-0 md:top-2 md:z-10 md:pointer-events-none">
+          <div className="md:pointer-events-auto">
+            <Link
+              href="/our-work"
+              className="group inline-flex items-center gap-1.5 rounded-full border border-line bg-surface/90 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-sans font-medium text-ink shadow-2xs backdrop-blur-xs transition-all duration-200 hover:border-brand hover:bg-brand hover:text-white active:scale-95"
+            >
+              <span className="transition-transform duration-200 group-hover:-translate-x-1">←</span>
+              <span>Categories</span>
+            </Link>
+          </div>
 
-        <div className="md:absolute md:right-0 md:top-2.5 md:z-10 hidden sm:block">
-          <Link
-            href="/our-work/all"
-            className="group inline-flex items-center gap-1.5 font-mono text-xs sm:text-sm uppercase tracking-wider text-muted hover:text-brand transition-colors font-medium"
-          >
-            <span>All projects</span>
-            <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
-          </Link>
+          <div className="md:pointer-events-auto">
+            <Link
+              href="/our-work/all"
+              className="group inline-flex items-center gap-1.5 rounded-full border border-brand/25 bg-brand/5 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-sans font-semibold text-brand shadow-2xs transition-all duration-200 hover:border-brand hover:bg-brand hover:text-white active:scale-95"
+            >
+              <span>All projects</span>
+              <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
+            </Link>
+          </div>
         </div>
 
         <SectionHeading

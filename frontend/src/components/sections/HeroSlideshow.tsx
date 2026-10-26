@@ -154,8 +154,8 @@ export function HeroSlideshow({
       {/* Navigation Controls (Dots & Arrows) when multiple slides exist */}
       {hasMultiple && (
         <>
-          {/* Bottom-left Pill / Dot Indicators */}
-          <div className="absolute bottom-2 left-1/2 z-20 flex -translate-x-1/2 items-center md:bottom-[7%] md:left-[12%] md:translate-x-0">
+          {/* Bottom Pill / Dot Indicators (lifted above floating stats stripe on mobile) */}
+          <div className="absolute bottom-9 left-1/2 z-20 flex -translate-x-1/2 items-center sm:bottom-11 md:bottom-[7%] md:left-[12%] md:translate-x-0">
             {slides.map((_, i) => (
               <button
                 key={i}
