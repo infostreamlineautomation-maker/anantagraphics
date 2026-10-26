@@ -41,7 +41,7 @@ export function WorkCard({
   return (
     <article className="group/card flex flex-col">
       {/* Image container: clicking navigates directly to the particular work page */}
-      <div className="relative block aspect-[6/7] w-full overflow-hidden rounded-media bg-panel shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5">
+      <div className="relative block aspect-square w-full overflow-hidden rounded-media bg-panel shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5">
         <Link
           href={href}
           aria-label={label}
@@ -63,13 +63,6 @@ export function WorkCard({
           {label}
         </Link>
       </h2>
-
-      {/* Description text if present */}
-      {text && (
-        <p className="mx-auto mt-1 max-w-sm text-center font-serif text-xs sm:text-sm md:text-body-lg text-muted line-clamp-2 leading-relaxed">
-          {text}
-        </p>
-      )}
 
       {/* Optional CTA button (hidden by default) */}
       {showCta && (

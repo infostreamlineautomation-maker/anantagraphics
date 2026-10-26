@@ -59,6 +59,11 @@ class ProjectCard(BaseModel):
     secondary_image: str | None = None
     craft_tags: list[str] = []
     color_palette: list[str] = []
+    client: str | None = None
+    description: str | None = None
+    intro_image: str | None = None
+    is_featured: bool = False
+    sequence: int = 0
 
 
 class WorkCategoryDetail(WorkCategoryCard, SeoFields):
@@ -299,7 +304,7 @@ class PageSectionUpdate(BaseModel):
         return v if v is None else _limit_json(v)
 
 
-SETTING_KEYS = ("brand", "contact", "socials", "footer", "seo")
+SETTING_KEYS = ("brand", "contact", "socials", "footer", "seo", "stats")
 
 
 class SettingUpdate(BaseModel):

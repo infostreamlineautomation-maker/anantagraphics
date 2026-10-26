@@ -31,12 +31,19 @@ const LABELS: Record<string, string> = {
   paragraphs: "Paragraphs",
   get_in_touch: "“Get In Touch” card",
   cta: "“Have an idea in mind?” card",
-  explore_title: "“Explore more” heading",
   value: "Big text",
   gallery: "Side Carousel Mockup Images",
   bg_color: "Background Color (Hex)",
   slides: "Hero Slideshow (Photos & Videos)",
   media: "Media file (Photo or Video)",
+  total_value: "Total Counter (e.g. 10M+)",
+  total_label: "Total Label",
+  cities_value: "No. of Cities Counter (e.g. 25+)",
+  cities_label: "Cities Label",
+  projects_value: "No. of Projects Counter (e.g. 500+)",
+  projects_label: "Projects Label",
+  clients_value: "No. of Clients Counter (e.g. 150+)",
+  clients_label: "Clients Label",
 };
 
 const LONG_TEXT_KEYS = new Set(["text", "description", "subtitle", "answer", "tagline", "lead"]);

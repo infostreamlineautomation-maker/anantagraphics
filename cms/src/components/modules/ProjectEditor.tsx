@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/Button";
 import { Field, Input, orNull, Select, Textarea, Toggle } from "@/components/ui/Form";
 import { ErrorBox, Loading, PageHeader, Panel } from "@/components/ui/Layout";
 import { useConfirm } from "@/components/ui/Modal";
-import { PaletteInput } from "@/components/ui/PaletteInput";
 import { TagInput } from "@/components/ui/TagInput";
 import { useToast } from "@/components/ui/Toast";
 import { adminFetch } from "@/lib/api";
@@ -19,24 +18,36 @@ import type { Project, WorkCategory } from "@/lib/types";
 
 import { SeoPanel } from "./SeoPanel";
 
-type Draft = Omit<Project, "id" | "category_name" | "sequence" | "created_at" | "updated_at">;
+type Draft = {
+  category_id: number;
+  title: string;
+  slug: string;
+  cover_image: string | null;
+  description: string | null;
+  intro_image: string | null;
+  client: string | null;
+  project_type: string | null;
+  services: string[];
+  gallery: string[];
+  is_featured: boolean;
+  is_active: boolean;
+  meta_title: string | null;
+  meta_description: string | null;
+  og_image: string | null;
+};
 
 const pick = (p: Project): Draft => ({
   category_id: p.category_id,
   title: p.title,
   slug: p.slug,
-  short_description: p.short_description,
   cover_image: p.cover_image,
-  secondary_image: p.secondary_image,
   description: p.description,
   intro_image: p.intro_image,
   client: p.client,
   project_type: p.project_type,
-  services: p.services,
-  craft_tags: p.craft_tags || [],
-  color_palette: p.color_palette || [],
-  gallery: p.gallery,
-  is_featured: p.is_featured,
+  services: p.services || [],
+  gallery: p.gallery || [],
+  is_featured: p.is_featured ?? false,
   is_active: p.is_active,
   meta_title: p.meta_title,
   meta_description: p.meta_description,
@@ -71,16 +82,12 @@ function ProjectForm({ initial, categories, presetCategory }: { initial: Project
           category_id: presetCategory,
           title: "",
           slug: "",
-          short_description: null,
           cover_image: null,
-          secondary_image: null,
           description: null,
           intro_image: null,
           client: null,
           project_type: null,
           services: [],
-          craft_tags: [],
-          color_palette: [],
           gallery: [],
           is_featured: false,
           is_active: true,
@@ -180,7 +187,7 @@ function ProjectForm({ initial, categories, presetCategory }: { initial: Project
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <div className="space-y-6">
-          <Panel title="Card on the category page">
+          <Panel title="Project Information">
             <div className="grid gap-4 md:grid-cols-2">
               <Field label="Title *">
                 <Input value={draft.title} maxLength={160} required onChange={(e) => set({ title: e.target.value })} />
@@ -206,49 +213,18 @@ function ProjectForm({ initial, categories, presetCategory }: { initial: Project
                   onChange={(e) => set({ slug: e.target.value.toLowerCase() })}
                 />
               </Field>
-              <Field label="Card text" className="md:col-span-2">
-                <Textarea rows={2} value={draft.short_description ?? ""} maxLength={300} onChange={(e) => set({ short_description: orNull(e.target.value) })} />
-              </Field>
             </div>
           </Panel>
 
-          <Panel
-            title="Work Card (3D Flip Specs)"
-            description="Finishing details and color palette swatches displayed on the back of this project card when flipped on hover."
-          >
-            <div className="space-y-5">
-              <Field
-                label="Craft & Finishing Tags"
-                hint="Press Enter after each tag (e.g. 'FSC Munken Pure 300gsm', 'Copper Hot Foil', 'Spot Gloss UV', 'Embossed Logotype')."
-              >
-                <TagInput
-                  value={draft.craft_tags}
-                  onChange={(craft_tags) => set({ craft_tags })}
-                  placeholder="Type tag and press Enter"
-                />
-              </Field>
-
-              <Field
-                label="Color Palette Swatches"
-                hint="Curated brand & material swatches displayed on the back face."
-              >
-                <PaletteInput
-                  value={draft.color_palette}
-                  onChange={(color_palette) => set({ color_palette })}
-                />
-              </Field>
-            </div>
-          </Panel>
-
-          <Panel title="Project page" description="Title, description and facts beside the intro image.">
+          <Panel title="Project Page Details" description="Title, description, and client metadata displayed beside the intro image.">
             <div className="grid gap-4 md:grid-cols-2">
-              <Field label="Description" className="md:col-span-2" hint="Leave empty to use the card text">
+              <Field label="Description" className="md:col-span-2" hint="Displayed beside the intro image on the project detail page.">
                 <Textarea rows={4} value={draft.description ?? ""} onChange={(e) => set({ description: orNull(e.target.value) })} />
               </Field>
-              <Field label="Client" hint="“Client: ABC Café”">
+              <Field label="Client" hint="e.g. “ABC Café”, “Kalamandir Jewellers”">
                 <Input value={draft.client ?? ""} maxLength={160} onChange={(e) => set({ client: orNull(e.target.value) })} />
               </Field>
-              <Field label="Project" hint="“Project: Paper Cup Design”">
+              <Field label="Project Type" hint="e.g. “Paper Cup Design”, “Luxury Jewellery Catalogue”">
                 <Input value={draft.project_type ?? ""} maxLength={160} onChange={(e) => set({ project_type: orNull(e.target.value) })} />
               </Field>
               <Field label="Services" className="md:col-span-2" hint="Shown as “Graphic Design · Printing”. Press Enter after each.">
@@ -271,17 +247,24 @@ function ProjectForm({ initial, categories, presetCategory }: { initial: Project
 
         <div className="space-y-6">
           <Panel title="Visibility">
-            <div className="space-y-3">
+            <div className="space-y-4">
               <Toggle checked={draft.is_active} onChange={(is_active) => set({ is_active })} label={draft.is_active ? "Visible on website" : "Hidden from website"} />
-              <Toggle checked={draft.is_featured} onChange={(is_featured) => set({ is_featured })} label="Feature in “Explore more projects”" />
-              <p className="text-xs text-muted">Featured projects are shown first under other projects’ pages.</p>
+              <div className="border-t border-line/60 pt-3">
+                <Toggle
+                  checked={draft.is_featured}
+                  onChange={(is_featured) => set({ is_featured })}
+                  label="Feature on homepage carousel"
+                />
+                <p className="mt-1 text-xs text-muted">
+                  Featured projects appear as active cards in the homepage Services carousel.
+                </p>
+              </div>
             </div>
           </Panel>
           <Panel title="Images">
             <div className="space-y-5">
-              <ImageField label="Primary card image" hint="Category grid and “Explore more”. Portrait, about 6:7." value={draft.cover_image} onChange={(cover_image) => set({ cover_image })} aspect="aspect-[6/7]" />
-              <ImageField label="Secondary card image" hint="Alternate photo of this work shown when flipped on hover." value={draft.secondary_image} onChange={(secondary_image) => set({ secondary_image })} aspect="aspect-[6/7]" />
-              <ImageField label="Intro image" hint="Beside the title on the project page. Leave empty to reuse the card image." value={draft.intro_image} onChange={(intro_image) => set({ intro_image })} />
+              <ImageField label="Primary card image" hint="Square card image shown in the category grid and portfolio page." value={draft.cover_image} onChange={(cover_image) => set({ cover_image })} aspect="aspect-square" />
+              <ImageField label="Intro image" hint="Beside the title on the project page. Leave empty to reuse the primary image." value={draft.intro_image} onChange={(intro_image) => set({ intro_image })} />
             </div>
           </Panel>
         </div>

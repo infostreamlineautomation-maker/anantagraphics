@@ -14,6 +14,7 @@ import type { JsonObject, PageSection } from "@/lib/types";
 
 import { FeaturedStripEditor } from "./FeaturedStripEditor";
 import { JsonContentEditor } from "./JsonContentEditor";
+import { StatsStripeEditor } from "./StatsStripeEditor";
 
 export const PAGE_META: Record<string, { title: string; path: string }> = {
   home: { title: "Home", path: "/" },
@@ -113,6 +114,8 @@ function SectionForm({ section, onDirtyChange }: { section: PageSection; onDirty
     >
       {section.key === "featured" ? (
         <FeaturedStripEditor value={content} onChange={change} />
+      ) : section.key === "stats" ? (
+        <StatsStripeEditor value={content} onChange={change} />
       ) : (
         <JsonContentEditor value={content} onChange={change} />
       )}

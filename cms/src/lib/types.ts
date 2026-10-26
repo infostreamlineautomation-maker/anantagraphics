@@ -8,13 +8,13 @@ export type WorkCategory = Seo & {
   id: number;
   name: string;
   slug: string;
-  short_description: string | null;
+  short_description?: string | null;
   card_image: string | null;
-  secondary_image: string | null;
+  secondary_image?: string | null;
   heading: string | null;
   intro: string | null;
-  craft_tags: string[];
-  color_palette: string[];
+  craft_tags?: string[];
+  color_palette?: string[];
   is_active: boolean;
   sequence: number;
   project_count: number;
@@ -28,18 +28,18 @@ export type Project = Seo & {
   category_name: string;
   title: string;
   slug: string;
-  short_description: string | null;
+  short_description?: string | null;
   cover_image: string | null;
-  secondary_image: string | null;
+  secondary_image?: string | null;
   description: string | null;
   intro_image: string | null;
   client: string | null;
   project_type: string | null;
   services: string[];
-  craft_tags: string[];
-  color_palette: string[];
+  craft_tags?: string[];
+  color_palette?: string[];
   gallery: string[];
-  is_featured: boolean;
+  is_featured?: boolean;
   is_active: boolean;
   sequence: number;
   created_at: string;
@@ -170,4 +170,4 @@ export type Dashboard = {
   latest_enquiries: { id: number; name: string; type: EnquiryType; status: EnquiryStatus; service: string | null; created_at: string }[];
 };
 
-export type Settings = Record<"brand" | "contact" | "socials" | "footer" | "seo", Record<string, string>>;
+export type Settings = Record<"brand" | "contact" | "socials" | "footer" | "seo" | "stats", Record<string, string>>;

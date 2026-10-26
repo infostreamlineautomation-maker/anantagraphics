@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Link from "next/link";
 import { motion } from "motion/react";
 
 import { CircleArrowLink } from "@/components/ui/Button";
@@ -24,7 +25,7 @@ export type ServiceItem = {
  *   and white arrow circle buttons.
  * - Entire carousel track scrolls smoothly with arrows or swipe, peeking off the edge.
  */
-export function ServiceCarousel({ items, ctaLabel = "View Project Work" }: { items: ServiceItem[]; ctaLabel?: string }) {
+export function ServiceCarousel({ items, ctaLabel = "Our Services" }: { items: ServiceItem[]; ctaLabel?: string }) {
   const [active, setActive] = useState(0);
   const trackRef = useRef<HTMLDivElement>(null);
 
@@ -42,38 +43,49 @@ export function ServiceCarousel({ items, ctaLabel = "View Project Work" }: { ite
 
   return (
     <div className="relative w-full">
-      {/* Carousel Navigation Arrows with Magnetic hover */}
-      <div className={`mb-3 items-center justify-end gap-2 pr-2 ${items.length > 1 ? "flex" : "hidden"}`}>
-        <Magnetic strength={0.3}>
-          <motion.button
-            type="button"
-            onClick={() => scroll("left")}
-            disabled={active === 0}
-            aria-label="Previous service"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            className="disabled:opacity-35 flex size-9 items-center justify-center rounded-full border border-line bg-surface text-ink transition-colors hover:bg-panel hover:text-brand shadow-xs"
-          >
-            <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </motion.button>
-        </Magnetic>
-        <Magnetic strength={0.3}>
-          <motion.button
-            type="button"
-            onClick={() => scroll("right")}
-            disabled={active === items.length - 1}
-            aria-label="Next service"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            className="disabled:opacity-35 flex size-9 items-center justify-center rounded-full border border-line bg-surface text-ink transition-colors hover:bg-panel hover:text-brand shadow-xs"
-          >
-            <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </motion.button>
-        </Magnetic>
+      {/* Top Row: "View All Work" link on left, Carousel Navigation Arrows on right */}
+      <div className="mb-4 flex items-center justify-between gap-3 px-1">
+        <Link
+          href="/our-work/all"
+          className="group inline-flex items-center gap-1.5 font-mono text-xs sm:text-sm uppercase tracking-wider text-muted hover:text-brand transition-colors font-semibold"
+        >
+          <span>View All Work</span>
+          <span className="text-base transition-transform duration-200 group-hover:translate-x-1">→</span>
+        </Link>
+
+        {/* Carousel Navigation Arrows with Magnetic hover */}
+        <div className={`items-center gap-2 ${items.length > 1 ? "flex" : "hidden"}`}>
+          <Magnetic strength={0.3}>
+            <motion.button
+              type="button"
+              onClick={() => scroll("left")}
+              disabled={active === 0}
+              aria-label="Previous service"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className="disabled:opacity-35 flex size-9 items-center justify-center rounded-full border border-line bg-surface text-ink transition-colors hover:bg-panel hover:text-brand shadow-xs"
+            >
+              <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </motion.button>
+          </Magnetic>
+          <Magnetic strength={0.3}>
+            <motion.button
+              type="button"
+              onClick={() => scroll("right")}
+              disabled={active === items.length - 1}
+              aria-label="Next service"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className="disabled:opacity-35 flex size-9 items-center justify-center rounded-full border border-line bg-surface text-ink transition-colors hover:bg-panel hover:text-brand shadow-xs"
+            >
+              <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </motion.button>
+          </Magnetic>
+        </div>
       </div>
 
       {/* Horizontal Carousel Track */}

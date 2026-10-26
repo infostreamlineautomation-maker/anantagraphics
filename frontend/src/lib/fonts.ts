@@ -1,3 +1,4 @@
+import localFont from "next/font/local";
 import {
   Comme,
   Didact_Gothic,
@@ -6,18 +7,18 @@ import {
   Encode_Sans_Semi_Expanded,
   Fenix,
   Gloock,
-  Google_Sans_Flex,
   Instrument_Sans,
 } from "next/font/google";
 
 // The Figma file's fonts. Only the weights the design uses are loaded. Fonts seen on first paint
 // (nav/body, headings, leads) are preloaded; the rest (footer, showcase tabs, eyebrows…) load on use,
 // so on slow phones they don't compete with the hero image.
-// Next has no fallback metrics for Google Sans Flex yet, so skip the generated fallback
-const googleSansFlex = Google_Sans_Flex({
-  subsets: ["latin"],
+// Loaded locally to eliminate Next.js Turbopack fallback metric warnings
+const googleSansFlex = localFont({
+  src: "../fonts/GoogleSansFlex.ttf",
   variable: "--font-google-sans-flex",
-  adjustFontFallback: false,
+  display: "swap",
+  fallback: ["system-ui", "sans-serif"],
 });
 const domine = Domine({ subsets: ["latin"], weight: ["700"], variable: "--font-domine" });
 const fenix = Fenix({ subsets: ["latin"], weight: "400", variable: "--font-fenix" });

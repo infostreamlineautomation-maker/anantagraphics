@@ -5,9 +5,10 @@ import { FeaturedStrip } from "@/components/sections/FeaturedStrip";
 import { HeroSlideshow } from "@/components/sections/HeroSlideshow";
 import { ServiceCarousel } from "@/components/sections/ServiceCarousel";
 import { ShowcaseBlock } from "@/components/sections/ShowcaseBlock";
+import { StatsStripe } from "@/components/sections/StatsStripe";
 import { BusinessJsonLd } from "@/components/seo/BusinessJsonLd";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { getClients, getPage, getServices, getSettings } from "@/lib/api";
+import { getClients, getFeaturedProjects, getPage, getSettings } from "@/lib/api";
 import { items, safeHref, section, str, strList } from "@/lib/content";
 
 export const metadata: Metadata = { alternates: { canonical: "/" } };
@@ -21,8 +22,31 @@ const DEFAULT_SHOWCASE = [
 ];
 
 export default async function HomePage() {
-  const [sections, services, clients, settings] = await Promise.all([getPage("home"), getServices(), getClients(), getSettings()]);
+  const [sections, featuredProjects, clients, settings] = await Promise.all([getPage("home"), getFeaturedProjects(), getClients(), getSettings()]);
   const hero = section(sections, "hero");
+  const statsSection = sections["stats"] as Record<string, unknown> | undefined;
+  const rawStatsItems = statsSection ? items(statsSection, "items") : [];
+  const stats = statsSection
+    ? {
+        items:
+          rawStatsItems.length > 0
+            ? rawStatsItems.map((r) => ({
+                id: str(r, "id"),
+                value: str(r, "value"),
+                label: str(r, "label"),
+                enabled: r.enabled !== false,
+              }))
+            : undefined,
+        total_value: str(statsSection, "total_value") || settings.stats?.total_value,
+        total_label: str(statsSection, "total_label") || settings.stats?.total_label,
+        cities_value: str(statsSection, "cities_value") || settings.stats?.cities_value,
+        cities_label: str(statsSection, "cities_label") || settings.stats?.cities_label,
+        projects_value: str(statsSection, "projects_value") || settings.stats?.projects_value,
+        projects_label: str(statsSection, "projects_label") || settings.stats?.projects_label,
+        clients_value: str(statsSection, "clients_value") || settings.stats?.clients_value,
+        clients_label: str(statsSection, "clients_label") || settings.stats?.clients_label,
+      }
+    : null;
   const intro = section(sections, "intro");
   const rawShowcase = items(section(sections, "showcase"));
   const showcase = rawShowcase.length > 0 ? rawShowcase : DEFAULT_SHOWCASE;
@@ -45,6 +69,8 @@ export default async function HomePage() {
         }))}
       />
 
+      {stats && <StatsStripe stats={stats} />}
+
       <section className="container-site section-y">
         <SectionHeading eyebrow={str(intro, "eyebrow")} title={str(intro, "title")} lead={str(intro, "lead")} />
         {/* Showcase blocks covering all horizontal space with controlled height */}
@@ -64,19 +90,30 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {services.length > 0 && (
+      {featuredProjects.length > 0 && (
         <section id="services" className="container-site section-y scroll-mt-8">
           <SectionHeading eyebrow={str(servicesIntro, "eyebrow")} title={str(servicesIntro, "title")} />
           <div className="mt-8 md:mt-10">
             <ServiceCarousel
-              ctaLabel={str(servicesIntro, "cta_label", "View Project Work")}
-              items={services.map((s) => ({
-                title: s.title,
-                clientName: s.client_name,
-                description: s.description ?? "",
-                image: s.image,
-                href: safeHref(s.link ?? "/our-work", "/our-work"),
-              }))}
+              ctaLabel={str(servicesIntro, "cta_label", "Our Services")}
+              items={featuredProjects.map((p) => {
+                const serviceLabel =
+                  p.category_slug === "printed-materials"
+                    ? "Designing & Printing"
+                    : p.category_slug === "signage"
+                    ? "Signages Solutions"
+                    : p.category_slug === "packaging"
+                    ? "Packaging Solutions"
+                    : p.category_name;
+
+                return {
+                  title: serviceLabel,
+                  clientName: p.client || p.title,
+                  description: p.description || p.short_description || "",
+                  image: p.cover_image || p.intro_image,
+                  href: `/our-work/${p.category_slug}/${p.slug}`,
+                };
+              })}
             />
           </div>
         </section>

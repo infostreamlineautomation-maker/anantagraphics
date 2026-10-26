@@ -24,6 +24,27 @@ export type Settings = {
     default_description: string;
     og_image?: string;
   };
+  stats?: StatsSettings;
+};
+
+export type CounterItem = {
+  id?: string;
+  value: string;
+  label: string;
+  enabled?: boolean;
+};
+
+export type StatsSettings = {
+  title?: string;
+  items?: CounterItem[];
+  total_value?: string;
+  total_label?: string;
+  cities_value?: string;
+  cities_label?: string;
+  projects_value?: string;
+  projects_label?: string;
+  clients_value?: string;
+  clients_label?: string;
 };
 
 export type SocialKey = "instagram" | "facebook" | "linkedin" | "youtube";
@@ -67,6 +88,10 @@ export type ProjectCard = {
   secondary_image?: string | null;
   craft_tags?: string[];
   color_palette?: string[];
+  client?: string | null;
+  description?: string | null;
+  intro_image?: string | null;
+  is_featured?: boolean;
 };
 
 export type WorkCategoryDetail = WorkCategoryCard &

@@ -43,13 +43,24 @@ export default async function WorkCategoryPage({ params }: PageProps<"/our-work/
             className="group inline-flex items-center gap-2 font-mono text-xs sm:text-sm uppercase tracking-wider text-muted hover:text-brand transition-colors font-medium"
           >
             <span className="text-base sm:text-lg transition-transform duration-200 group-hover:-translate-x-1">←</span>
-            <span>Our Work</span>
+            <span>Categories</span>
+          </Link>
+        </div>
+
+        <div className="md:absolute md:right-0 md:top-2.5 md:z-10 hidden sm:block">
+          <Link
+            href="/our-work/all"
+            className="group inline-flex items-center gap-1.5 font-mono text-xs sm:text-sm uppercase tracking-wider text-muted hover:text-brand transition-colors font-medium"
+          >
+            <span>All projects</span>
+            <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
           </Link>
         </div>
 
         <SectionHeading
           as="h1"
           title={c.heading || c.name}
+          lead={c.intro || c.short_description || undefined}
           align="center"
           titleClassName="!text-hero md:!text-[2.6rem] lg:!text-[2.85rem] tracking-tight"
         />

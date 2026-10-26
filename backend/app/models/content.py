@@ -37,7 +37,7 @@ class PageSection(TimestampMixin, Base):
 
 
 class SiteSetting(Base):
-    """Key/value site settings: "brand", "contact", "socials", "footer", "seo"."""
+    """Key/value site settings: "brand", "contact", "socials", "footer", "seo", "stats"."""
 
     __tablename__ = "site_settings"
 

@@ -144,8 +144,8 @@ def _project_out(p: Project) -> ProjectAdmin:
 
 
 def _project_tags(p: Project) -> list[str]:
-    # "projects" covers every project page, since each one lists others under "Explore more projects"
-    return ["work", "projects", f"work-category:{p.category.slug}", f"project:{p.slug}"]
+    # "home" covers the homepage carousel which displays featured projects
+    return ["home", "work", "projects", f"work-category:{p.category.slug}", f"project:{p.slug}"]
 
 
 @projects.get("", response_model=Page[ProjectAdmin])

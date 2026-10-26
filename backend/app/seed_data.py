@@ -42,6 +42,17 @@ SETTINGS = {
         ),
         "og_image": f"{F}/home/hero-shopfront.jpg",
     },
+    "stats": {
+        "title": "Delivering Excellence Across India",
+        "total_value": "10M+",
+        "total_label": "Total Pieces Crafted",
+        "cities_value": "25+",
+        "cities_label": "Cities Covered",
+        "projects_value": "500+",
+        "projects_label": "Projects Completed",
+        "clients_value": "150+",
+        "clients_label": "Happy Clients",
+    },
 }
 
 # ---------------------------------------------------------------- page sections: (key, CMS label, content)
@@ -80,6 +91,43 @@ PAGES = {
                     "alt": "Fine luxury foiled editorial spreads",
                 },
             ],
+        }),
+        ("stats", "Impact Counter Stripe", {
+            "title": "Delivering Excellence Across India",
+            "items": [
+                {
+                    "id": "total",
+                    "value": "10M+",
+                    "label": "Total Pieces Crafted",
+                    "enabled": True,
+                },
+                {
+                    "id": "cities",
+                    "value": "25+",
+                    "label": "Cities Covered",
+                    "enabled": True,
+                },
+                {
+                    "id": "projects",
+                    "value": "500+",
+                    "label": "Projects Completed",
+                    "enabled": True,
+                },
+                {
+                    "id": "clients",
+                    "value": "150+",
+                    "label": "Happy Clients",
+                    "enabled": True,
+                },
+            ],
+            "total_value": "10M+",
+            "total_label": "Total Pieces Crafted",
+            "cities_value": "25+",
+            "cities_label": "Cities Covered",
+            "projects_value": "500+",
+            "projects_label": "Projects Completed",
+            "clients_value": "150+",
+            "clients_label": "Happy Clients",
         }),
         ("intro", "What we create", {
             "eyebrow": "WHAT WE CREATE",
@@ -300,7 +348,6 @@ PAGES = {
                 "Explore a selection of projects where design, print and brand communication come together to "
                 "create meaningful visual experiences."
             ),
-            "explore_title": "Explore more projects",
         }),
     ],
 }
@@ -329,18 +376,36 @@ WORK_CATEGORIES = [
         "heading": "Printed Materials",
         "intro": "Business stationery, brochures and marketing collateral, designed and printed with care for every detail.",
         "projects": [
-            _project("nura-candle-boxes", "Nura Candle Boxes", "Printed boxes with bold lettering for a home fragrance range.",
-                     f"{F}/projects/explore-nura-boxes.jpg", client="Nura", project_type="Candle Box Design",
-                     services=["Graphic Design", "Printing"], is_featured=True),
-            _project("editorial-catalog-brochure", "Editorial Catalog & Brochure", "Fine printing with tactile textured papers and editorial layouts.",
-                     f"{F}/showcase/print-editorial-hero.jpg", client="Studio V", project_type="Catalog Design",
-                     services=["Graphic Design", "Printing"]),
-            _project("luxury-stationery-suite", "Luxury Foil Stationery Suite", "Metallic foil stamped letterheads, envelopes and business cards.",
-                     f"{F}/showcase/print-editorial-card1.jpg", client="Aura Living", project_type="Stationery Design",
-                     services=["Print Finishing", "Foil Stamping"]),
-            _project("brand-identity-print", "Brand Identity Collateral", "Comprehensive brand identity guidelines, folders and printed assets.",
-                     f"{F}/showcase/brand-identity-hero.jpg", client="Apex", project_type="Brand Collateral",
-                     services=["Brand Identity", "Printing"]),
+            _project("kalamandir-jewellery-catalogue", "Kalamandir Jewellery Catalogue & Suite",
+                     "Bespoke gold-foiled luxury jewellery catalogues, certificates & textured brand collateral.",
+                     "/uploads/services/kalamandir-jewellery-catalogue.jpg",
+                     intro_image="/uploads/services/kalamandir-jewellery-catalogue.jpg",
+                     description=(
+                         "Bespoke gold-foiled luxury jewellery catalogues, certificate folders, and textured brand collateral "
+                         "designed and printed for Kalamandir Jewellers' flagship collections."
+                     ),
+                     client="Kalamandir Jewellers", project_type="Luxury Jewellery Catalogue & Suite",
+                     services=["Fine Printing", "Graphic Design", "Gold Foiling", "Textured Papers"], is_featured=True),
+            _project("gujarat-gas-corporate-suite", "Gujarat Gas Corporate Annual Report & Collateral",
+                     "Precision printed corporate annual reports, technical publications & executive stationery suites.",
+                     f"{F}/showcase/print-editorial-hero.jpg",
+                     intro_image=f"{F}/showcase/print-editorial-hero.jpg",
+                     description=(
+                         "High-volume corporate annual report publications, safety documentation, and premium branded "
+                         "executive stationery suites for Gujarat Gas."
+                     ),
+                     client="Gujarat Gas", project_type="Annual Report & Stationery Suite",
+                     services=["Editorial Design", "Corporate Printing", "Foil Stamping", "Executive Stationery"]),
+            _project("amardeep-aggregates-profile", "Amardeep Aggregates Corporate Profile",
+                     "Multi-page industrial company profiles and infrastructure product catalogues with matte finish.",
+                     f"{F}/showcase/brand-identity-hero.jpg",
+                     intro_image=f"{F}/showcase/brand-identity-hero.jpg",
+                     description=(
+                         "Heavy-weight multi-page company profiles, technical specification sheets, and marketing brochures "
+                         "designed and produced for Amardeep Aggregates."
+                     ),
+                     client="Amardeep Aggregates", project_type="Industrial Corporate Brochure",
+                     services=["Graphic Design", "Brochure Printing", "Matte Lamination", "Die-Cut Folders"]),
         ],
     },
     {
@@ -353,40 +418,36 @@ WORK_CATEGORIES = [
             "print-ready solutions tailored to each client's needs."
         ),
         "projects": [
-            _project("premium-product-packaging", "Premium Product Packaging",
-                     "Custom packaging design with branded graphics and print-ready artwork.",
-                     f"{F}/projects/premium-product-packaging.jpg", client="Ritu", project_type="Perfume Box Design",
-                     services=["Packaging Design", "Printing"]),
-            _project("custom-retail-packaging", "Custom Retail Packaging",
-                     "Branded retail packaging that boosts shelf appeal and highlights products.",
-                     f"{F}/projects/custom-retail-packaging.jpg", project_type="Retail Box Design",
-                     services=["Packaging Design", "Printing"]),
-            _project("food-beverage-packaging", "Food & Beverage Packaging",
-                     "Clear, branded packaging designs that showcase product information.",
-                     f"{F}/projects/food-beverage-packaging.jpg", client="Quickbite", project_type="Food Packaging",
-                     services=["Packaging Design", "Printing"]),
-            _project("corporate-gift-packaging", "Corporate Gift Packaging",
-                     "Branded gift packaging that makes every corporate gift feel considered.",
-                     f"{F}/projects/corporate-gift-packaging.jpg", client="Brandwater", project_type="Gift Set Packaging",
-                     services=["Brand Identity", "Packaging Design", "Printing"]),
-            _project("ecommerce-product-packaging", "E-commerce Product Packaging",
-                     "Branded mailer boxes designed for memorable unboxing experiences.",
-                     f"{F}/projects/ecommerce-packaging.jpg", client="Meeline", project_type="Mailer Box Design",
-                     services=["Packaging Design", "Printing"]),
-            _project("custom-printed-boxes", "Custom Printed Boxes",
-                     "Custom box packaging with branded designs and print-ready artwork.",
-                     f"{F}/projects/custom-printed-boxes.jpg", client="Oula", project_type="Custom Box Design",
-                     services=["Illustration", "Packaging Design", "Printing"]),
-            _project("paper-cup-packaging", "Paper Cup Packaging",
-                     "A clean and simple paper cup design for a café's takeaway range.",
-                     f"{F}/projects/paper-cup-gallery-1.jpg",
+            _project("mahalaxmi-juice-packaging", "Mahalaxmi Juice & Fast Food Packaging",
+                     "Custom food-grade takeaway boxes, beverage bottle labels & eco-friendly packaging.",
+                     "/uploads/services/mahalaxmi-juice-packaging.jpg",
+                     intro_image="/uploads/services/mahalaxmi-juice-packaging.jpg",
                      description=(
-                         "A clean and simple paper cup design created to give the café a recognizable and "
-                         "professional brand presence."
+                         "Custom food-grade takeaway boxes, beverage bottle labels, and eco-friendly packaging solutions "
+                         "engineered for quick-service food presentation and durability."
                      ),
-                     intro_image=f"{F}/projects/paper-cup-intro.jpg",
-                     client="ABC Café", project_type="Paper Cup Design", services=["Graphic Design", "Printing"],
-                     gallery=PAPER_CUP_GALLERY),
+                     client="Mahalaxmi Juice & Fast Food Corner", project_type="Food & Beverage Packaging",
+                     services=["Packaging Design", "Food Grade Printing", "Eco Takeaway Boxes", "Label Design"], is_featured=True),
+            _project("dero-retail-packaging", "Dero Custom Retail Packaging",
+                     "Custom rigid presentation boxes and branded retail product packaging with spot UV.",
+                     f"{F}/projects/custom-printed-boxes.jpg",
+                     intro_image=f"{F}/projects/custom-printed-boxes.jpg",
+                     description=(
+                         "Custom die-cut packaging boxes engineered with rigid board, precision spot UV, and vibrant brand "
+                         "graphics for Dero retail merchandise."
+                     ),
+                     client="Dero", project_type="Retail Product Packaging",
+                     services=["Packaging Design", "Custom Die-Cut Boxes", "Spot UV", "Offset Printing"]),
+            _project("ba-prerna-eco-packaging", "BA Prerna Cleanearth Eco Packaging",
+                     "100% recyclable kraft mailer boxes, biodegradable food containers & soy-ink printed sleeves.",
+                     f"{F}/projects/ecommerce-packaging.jpg",
+                     intro_image=f"{F}/projects/ecommerce-packaging.jpg",
+                     description=(
+                         "Environmentally conscious packaging solutions manufactured with certified post-consumer recycled "
+                         "fiber and non-toxic soy inks for BA Prerna Cleanearth."
+                     ),
+                     client="BA Prerna Cleanearth", project_type="Sustainable Packaging",
+                     services=["Sustainable Packaging", "Kraft Paper Boxes", "Soy Inks", "Biodegradable Sleeves"]),
         ],
     },
     {
@@ -396,51 +457,36 @@ WORK_CATEGORIES = [
         "heading": "Signage",
         "intro": "Shop signs, A-frames, window graphics and wayfinding that make a brand easy to spot.",
         "projects": [
-            _project("acrylic-retail-signage", "3D Acrylic Retail Signage", "Illuminated 3D acrylic signage with precision laser cutting and clean finishes.",
-                     f"{F}/work-categories/signage.jpg", client="Luxe Retail", project_type="Retail Signage",
-                     services=["Signage Design", "Fabrication"]),
-            _project("outdoor-storefront-branding", "Outdoor Storefront Window Graphics", "UV-resistant outdoor vinyl window graphics for high foot-traffic retail spaces.",
-                     f"{F}/home/hero-shopfront.jpg", client="Roaster Co.", project_type="Window Graphics",
-                     services=["Signage", "Large Format Printing"]),
-            _project("event-display-wayfinding", "Event Display & Wayfinding Signage", "Wayfinding signs and modular directional stands for exhibitions and events.",
-                     f"{F}/showcase/events-experiences-hero.jpg", client="Expo India", project_type="Wayfinding Signage",
-                     services=["Signage", "Graphic Design"]),
-        ],
-    },
-    {
-        "slug": "tags-labels", "name": "Tags & Labels",
-        "short_description": "Hang tags, labels and stickers that carry your brand onto every product.",
-        "card_image": f"{F}/work-categories/tags-labels.jpg",
-        "heading": "Tags & Labels",
-        "intro": "Hang tags, product labels and stickers printed on premium stocks with finishes that stand out.",
-        "projects": [
-            _project("bazaar-gift-packaging", "Bazaar Gift Packaging", "Printed shipping boxes and tags for a gift store.",
-                     f"{F}/projects/explore-bazaar-box.jpg", client="Bazaar", project_type="Box & Tag Design",
-                     services=["Brand Identity", "Packaging Design"], is_featured=True),
-            _project("kraft-paper-hang-tags", "Custom Kraft Hang Tags", "Custom die-cut kraft paper hang tags with textured embossing and eyelet strings.",
-                     f"{F}/about/hero-bazaar-tags.jpg", client="Artisan Co", project_type="Hang Tag Design",
-                     services=["Tag Design", "Die-Cutting"]),
-            _project("metallic-foil-labels", "Metallic Foil Product Labels", "Roll stickers and product labels with gold foil stamping and waterproof finish.",
-                     f"{F}/work-categories/tags-labels.jpg", client="Botanica", project_type="Label Design",
-                     services=["Label Printing", "Foil Stamping"]),
-        ],
-    },
-    {
-        "slug": "pouches", "name": "Pouches",
-        "short_description": "Flexible pouches and sachets designed to grab attention on the shelf.",
-        "card_image": f"{F}/work-categories/pouches.jpg",
-        "heading": "Pouches & Flexible Packaging",
-        "intro": "Stand-up pouches, sachets and flexible packs designed for shelf impact and print-ready production.",
-        "projects": [
-            _project("glow-serum-box", "Glow Serum Box", "A die-cut carton and dropper label for a skincare serum.",
-                     f"{F}/projects/explore-glow-box.jpg", client="Glow", project_type="Carton Design",
-                     services=["Packaging Design", "Printing"], is_featured=True),
-            _project("stand-up-zipper-pouch", "Matte Stand-Up Zipper Pouch", "High-barrier matte finish pouches with resealable zip lock for retail items.",
-                     f"{F}/work-categories/pouches.jpg", client="NutriHarvest", project_type="Pouch Packaging",
-                     services=["Packaging Design", "Rotogravure Printing"]),
-            _project("specialty-food-pouch", "Specialty Food Foil Pouch", "Custom printed multi-layer pouches that preserve freshness and aroma.",
-                     f"{F}/projects/food-beverage-packaging.jpg", client="Roastmasters", project_type="Food Packaging",
-                     services=["Packaging Design", "Printing"]),
+            _project("svaraa-store-signage", "Svaraa Diamond Jewellery Store Signage",
+                     "Precision laser-cut 3D architectural signage & illuminated store identity displays.",
+                     "/uploads/services/svaraa-store-signage.jpg",
+                     intro_image="/uploads/services/svaraa-store-signage.jpg",
+                     description=(
+                         "Precision laser-cut 3D architectural signage and illuminated store identity displays crafted "
+                         "for Svaraa Diamond Jewellery flagship showrooms."
+                     ),
+                     client="Svaraa Diamond Jewellery", project_type="3D Architectural Signage",
+                     services=["Signage Design", "Laser Cutting", "Illuminated Displays", "Architectural Brass"], is_featured=True),
+            _project("gujarat-gas-safety-signage", "Gujarat Gas Industrial & Safety Signage",
+                     "Reflective outdoor regulatory signs, wayfinding totems & industrial plant safety signage.",
+                     f"{F}/work-categories/signage.jpg",
+                     intro_image=f"{F}/work-categories/signage.jpg",
+                     description=(
+                         "High-durability reflective outdoor signs, emergency route wayfinding totems, and facility safety "
+                         "indicators engineered for Gujarat Gas industrial plants."
+                     ),
+                     client="Gujarat Gas", project_type="Industrial Safety & Wayfinding Signage",
+                     services=["Industrial Signage", "Reflective Graphics", "Wayfinding Totems", "Safety Displays"]),
+            _project("kalamandir-showroom-signage", "Kalamandir Luxury Boutique Signage",
+                     "Warm backlit 3D acrylic & gold PVD coated architectural lettering for luxury jewellery boutiques.",
+                     f"{F}/home/hero-shopfront.jpg",
+                     intro_image=f"{F}/home/hero-shopfront.jpg",
+                     description=(
+                         "Architectural boutique storefront signage featuring gold PVD stainless steel lettering and diffused "
+                         "warm LED halo illumination for luxury showrooms."
+                     ),
+                     client="Kalamandir Jewellers", project_type="Luxury Boutique Acrylic Signage",
+                     services=["Storefront Signage", "Backlit 3D Letters", "Gold PVD Coating", "Boutique Fabrication"]),
         ],
     },
     {
@@ -450,15 +496,36 @@ WORK_CATEGORIES = [
         "heading": "Corporate Gifting",
         "intro": "Curated, branded gift kits for clients, teams and events — designed, printed and packed in-house.",
         "projects": [
-            _project("executive-gift-hamper", "Executive Gift Hamper", "Rigid gift box with custom foam inserts, diary, pen and insulated tumbler.",
-                     f"{F}/showcase/corporate-gifting-hero.jpg", client="Vanguard", project_type="Gift Hamper",
-                     services=["Packaging", "Branding", "Corporate Gifting"]),
-            _project("luxury-welcome-kit", "Luxury Employee Welcome Kit", "Curated welcome onboarding kit with customized merchandise and premium box.",
-                     f"{F}/showcase/corporate-gifting-card1.jpg", client="Horizon Tech", project_type="Onboarding Kit",
-                     services=["Merchandise", "Box Fabrication"]),
-            _project("custom-gift-box", "Custom Branded Gift Box", "Foil stamped rigid magnetic box with soft-touch matte lamination.",
-                     f"{F}/services/gift-box.jpg", client="Regal Estates", project_type="Rigid Gift Box",
-                     services=["Box Design", "Rigid Box Making"]),
+            _project("mountain-rocko-gifting", "Mountain Rocko Executive Gift Kit",
+                     "Premium executive gift hampers, matte-finish insulated drinkware & custom desk kits.",
+                     "/uploads/services/mountain-rocko-gifting.jpg",
+                     intro_image="/uploads/services/mountain-rocko-gifting.jpg",
+                     description=(
+                         "Premium executive gift hampers, matte-finish insulated drinkware, and custom desk kits fabricated "
+                         "for Mountain Rocko corporate partners."
+                     ),
+                     client="Mountain Rocko", project_type="Executive Gift Hamper",
+                     services=["Corporate Gifting", "Custom Fabrication", "Branded Merchandise", "Rigid Box Hamper"], is_featured=True),
+            _project("ba-prerna-gift-hamper", "BA Prerna Cleanearth Sustainable Hamper",
+                     "Eco-friendly corporate gift hampers with wooden keepsakes, seed paper notebooks & bamboo drinkware.",
+                     f"{F}/showcase/corporate-gifting-hero.jpg",
+                     intro_image=f"{F}/showcase/corporate-gifting-hero.jpg",
+                     description=(
+                         "Curated sustainable gift hampers featuring custom engraved pine wood boxes, recycled paper journals, "
+                         "and seed pens for eco-conscious events."
+                     ),
+                     client="BA Prerna Cleanearth", project_type="Sustainable Corporate Gifting Suite",
+                     services=["Eco Gifting", "Custom Wooden Hampers", "Seed Paper Stationery", "Laser Engraving"]),
+            _project("amardeep-milestone-kit", "Amardeep Aggregates Executive Milestone Kit",
+                     "Foil-stamped rigid magnetic gift boxes with engraved executive pens, leather diaries & tech accessories.",
+                     f"{F}/showcase/corporate-gifting-card1.jpg",
+                     intro_image=f"{F}/showcase/corporate-gifting-card1.jpg",
+                     description=(
+                         "Commemorative corporate milestone gift boxes featuring soft-touch lamination, laser-engraved metal items, "
+                         "and custom presentation packaging."
+                     ),
+                     client="Amardeep Aggregates", project_type="Executive Milestone Kit",
+                     services=["Rigid Magnetic Boxes", "Laser Engraving", "Executive Diaries", "Custom Inserts"]),
         ],
     },
     {
@@ -468,18 +535,26 @@ WORK_CATEGORIES = [
         "heading": "Overseas Work",
         "intro": "Custom packaging, print collateral and branding solutions delivered for international clients.",
         "projects": [
-            _project("international-brand-label", "International Brand Label", "High-density woven label and packaging for an international knitwear label.",
-                     f"{F}/showcase/brand-identity-card1.jpg", client="Knitwear Co", project_type="Export Label Design",
-                     services=["Label Design", "Export Packaging"]),
-            _project("global-luxury-stationery", "Global Luxury Stationery & Packaging", "Custom foil-stamped luxury stationery and presentation boxes for international studios.",
-                     f"{F}/showcase/events-experiences-card1.jpg", client="Charlotte Jackson", project_type="Luxury Stationery",
-                     services=["Fine Printing", "Packaging"]),
-            _project("export-paper-cups", "Export Café Takeaway Cups", "Custom printed double-wall takeaway cups manufactured for overseas coffee houses.",
-                     f"{F}/projects/paper-cup-gallery-1.jpg", client="Global Roast", project_type="Cup Packaging",
-                     services=["Packaging Design", "Food Grade Printing"]),
-            _project("overseas-event-passes", "Overseas Event Passes & Badges", "Waterproof credentials, passes and lanyard badges for global trade expos.",
-                     f"{F}/about/hero-bazaar-tags.jpg", client="Bazaar Global", project_type="Event Passes",
-                     services=["Event Branding", "Printing"]),
+            _project("dgla-certification-packaging", "DGLA International Diamond Certification Suite",
+                     "Security-printed gemological certificate folders, holographic seal wallets & diamond parcel boxes.",
+                     f"{F}/showcase/events-experiences-card1.jpg",
+                     intro_image=f"{F}/showcase/events-experiences-card1.jpg",
+                     description=(
+                         "Tamper-evident international gemological certificate wallets, custom foil-embossed grading report "
+                         "folders, and presentation diamond parcels for DGLA."
+                     ),
+                     client="DGLA – Diamond & Gem Laboratories of America", project_type="Gemological Security Packaging",
+                     services=["Security Printing", "Holographic Foil", "Rigid Certificate Folders", "Export Packaging"]),
+            _project("dero-export-merchandise", "Dero Global Export Merchandise & Packaging",
+                     "High-density packaging and export-grade branded merchandise for international retail distribution.",
+                     f"{F}/showcase/brand-identity-card1.jpg",
+                     intro_image=f"{F}/showcase/brand-identity-card1.jpg",
+                     description=(
+                         "International-standard export packaging and branded apparel merchandise designed and fabricated "
+                         "for global retail fulfillment."
+                     ),
+                     client="Dero", project_type="Global Export Product Packaging",
+                     services=["Export Packaging", "Die-Cut Fabrication", "Apparel Branding", "Global Fulfillment"]),
         ],
     },
 ]
@@ -489,28 +564,28 @@ SERVICES = [
         "title": "Designing & Printing",
         "client_name": "Kalamandir Jewellers",
         "image": "/uploads/services/kalamandir-jewellery-catalogue.jpg",
-        "link": "/our-work/printed-materials",
+        "link": "/our-work/printed-materials/kalamandir-jewellery-catalogue",
         "description": "Bespoke gold-foiled luxury jewellery catalogues, certificates & textured brand collateral.",
     },
     {
         "title": "Packaging Solutions",
         "client_name": "Mahalaxmi Juice & Fast Food",
         "image": "/uploads/services/mahalaxmi-juice-packaging.jpg",
-        "link": "/our-work/packaging",
+        "link": "/our-work/packaging/mahalaxmi-juice-packaging",
         "description": "Custom food-grade takeaway boxes, beverage bottle labels & eco-friendly packaging.",
     },
     {
         "title": "Corporate Gifting",
         "client_name": "Mountain Rocko",
         "image": "/uploads/services/mountain-rocko-gifting.jpg",
-        "link": "/our-work/corporate-gifting",
+        "link": "/our-work/corporate-gifting/mountain-rocko-gifting",
         "description": "Premium executive gift hampers, matte-finish insulated drinkware & custom desk kits.",
     },
     {
         "title": "Signage Solutions",
         "client_name": "Svaraa Diamond Jewellery",
         "image": "/uploads/services/svaraa-store-signage.jpg",
-        "link": "/our-work/signage",
+        "link": "/our-work/signage/svaraa-store-signage",
         "description": "Precision laser-cut 3D architectural signage & illuminated store identity displays.",
     },
 ]

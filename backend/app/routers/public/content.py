@@ -65,6 +65,22 @@ def _visible_projects():
     )
 
 
+@router.get("/projects", response_model=list[ExploreCard])
+def list_projects(db: Session = Depends(get_db)):
+    """List all active portfolio projects across all active categories."""
+    projects = db.scalars(
+        _visible_projects().order_by(WorkCategory.sequence, Project.sequence, Project.id)
+    ).all()
+    return [
+        ExploreCard(
+            **ProjectCard.model_validate(p).model_dump(),
+            category_slug=p.category.slug,
+            category_name=p.category.name,
+        )
+        for p in projects
+    ]
+
+
 @router.get("/projects/{slug}", response_model=ProjectDetail)
 def get_project(slug: str, db: Session = Depends(get_db)):
     project = db.scalar(_visible_projects().where(Project.slug == slug))
@@ -93,6 +109,48 @@ def get_project(slug: str, db: Session = Depends(get_db)):
         for p in others
     ]
     return detail
+
+
+@router.get("/featured-projects", response_model=list[ExploreCard])
+def list_featured_projects(db: Session = Depends(get_db)):
+    """Featured portfolio projects displayed on the homepage carousel."""
+    featured = list(
+        db.scalars(
+            _visible_projects()
+            .where(Project.is_featured)
+            .order_by(WorkCategory.sequence, Project.sequence, Project.id)
+        ).all()
+    )
+
+    if len(featured) < 4:
+        featured_ids = {p.id for p in featured}
+        seen_cats = {p.category_id for p in featured}
+        all_visible = db.scalars(
+            _visible_projects().order_by(WorkCategory.sequence, Project.sequence, Project.id)
+        ).all()
+        for p in all_visible:
+            if p.id not in featured_ids and p.category_id not in seen_cats:
+                featured.append(p)
+                featured_ids.add(p.id)
+                seen_cats.add(p.category_id)
+                if len(featured) >= 5:
+                    break
+        if len(featured) < 4:
+            for p in all_visible:
+                if p.id not in featured_ids:
+                    featured.append(p)
+                    featured_ids.add(p.id)
+                    if len(featured) >= 4:
+                        break
+
+    return [
+        ExploreCard(
+            **ProjectCard.model_validate(p).model_dump(),
+            category_slug=p.category.slug,
+            category_name=p.category.name,
+        )
+        for p in featured
+    ]
 
 
 @router.get("/services", response_model=list[ServiceOut])

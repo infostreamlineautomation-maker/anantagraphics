@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
 
@@ -150,7 +150,7 @@ function FeaturedCard({ item, index }: { item: FeaturedItem; index: number }) {
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.6, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
       whileHover={{ y: -8, transition: { duration: 0.25, ease: "easeOut" } }}
-      className="group relative w-[76vw] sm:w-[44vw] md:w-full shrink-0 md:shrink aspect-[661/962] overflow-hidden rounded-[20px] md:rounded-[26px] bg-panel shadow-sm transition-shadow duration-500 hover:shadow-2xl"
+      className="group relative w-[76vw] sm:w-[44vw] md:w-[calc((100cqi-3rem)/3)] lg:w-[calc((100cqi-4rem)/3)] shrink-0 snap-start aspect-[661/962] overflow-hidden rounded-[20px] md:rounded-[26px] bg-panel shadow-sm transition-shadow duration-500 hover:shadow-2xl"
     >
       {isExternal ? (
         <a
@@ -178,23 +178,102 @@ function FeaturedCard({ item, index }: { item: FeaturedItem; index: number }) {
 /**
  * Featured Work Strip directly below "Our Clients":
  * Supports Instagram video posts/reels, library & external videos, and photos.
+ * On desktop, displays 3 in view and provides navigation arrows to scroll when 4 or more items exist.
  */
 export function FeaturedStrip({ images }: { images: FeaturedItem[] }) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const checkScroll = useCallback(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    setCanScrollLeft(scrollLeft > 4);
+    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 4);
+  }, []);
+
+  useEffect(() => {
+    checkScroll();
+    const timer = setTimeout(checkScroll, 120);
+    window.addEventListener("resize", checkScroll);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("resize", checkScroll);
+    };
+  }, [checkScroll, images]);
+
+  const scroll = (direction: "left" | "right") => {
+    const container = trackRef.current;
+    if (!container) return;
+    const card = container.querySelector("li");
+    const cardWidth = card ? card.getBoundingClientRect().width : 360;
+    const secondCard = card?.nextElementSibling as HTMLElement | null;
+    const gap =
+      secondCard && card
+        ? secondCard.getBoundingClientRect().left - card.getBoundingClientRect().right
+        : 24;
+    const step = cardWidth + (gap > 0 ? gap : 24);
+
+    container.scrollBy({
+      left: direction === "left" ? -step : step,
+      behavior: "smooth",
+    });
+  };
+
   if (!images || images.length === 0) return null;
 
   return (
     <section className="container-site pb-12 md:pb-20" aria-label="Featured work and social feed">
-      <div className="-mx-4 overflow-x-auto px-4 pb-4 pt-1 [scrollbar-width:none] scroll-smooth md:mx-0 md:px-0 md:overflow-visible">
-        <ul className="flex gap-4 sm:gap-5 md:grid md:grid-cols-3 md:gap-6 lg:gap-8 w-max md:w-full items-center">
-          {images.map((item, i) => (
-            <FeaturedCard
-              key={`${str(item, "image") || str(item, "video_url") || str(item, "instagram_url")}-${i}`}
-              item={item}
-              index={i}
-            />
-          ))}
-        </ul>
+      <div className="relative @container [container-type:inline-size]">
+        {/* Left Arrow Button */}
+        <motion.button
+          type="button"
+          onClick={() => scroll("left")}
+          disabled={!canScrollLeft}
+          aria-label="Previous featured reels"
+          whileHover={canScrollLeft ? { scale: 1.1 } : {}}
+          whileTap={canScrollLeft ? { scale: 0.95 } : {}}
+          className="absolute left-1 sm:left-2 md:-left-5 lg:-left-7 top-1/2 -translate-y-1/2 z-40 flex size-11 md:size-13 lg:size-14 items-center justify-center rounded-full border border-line bg-surface/95 text-ink shadow-xl backdrop-blur-md transition-colors hover:bg-brand hover:text-white hover:border-brand disabled:opacity-25 disabled:cursor-not-allowed disabled:pointer-events-none"
+        >
+          <svg className="size-5 md:size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </motion.button>
+
+        {/* Right Arrow Button */}
+        <motion.button
+          type="button"
+          onClick={() => scroll("right")}
+          disabled={!canScrollRight}
+          aria-label="Next featured reels"
+          whileHover={canScrollRight ? { scale: 1.1 } : {}}
+          whileTap={canScrollRight ? { scale: 0.95 } : {}}
+          className="absolute right-1 sm:right-2 md:-right-5 lg:-right-7 top-1/2 -translate-y-1/2 z-40 flex size-11 md:size-13 lg:size-14 items-center justify-center rounded-full border border-line bg-surface/95 text-ink shadow-xl backdrop-blur-md transition-colors hover:bg-brand hover:text-white hover:border-brand disabled:opacity-25 disabled:cursor-not-allowed disabled:pointer-events-none"
+        >
+          <svg className="size-5 md:size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </motion.button>
+
+        {/* Scroll Track */}
+        <div
+          ref={trackRef}
+          onScroll={checkScroll}
+          className="overflow-x-auto scroll-smooth py-3 px-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden snap-x snap-mandatory"
+        >
+          <ul className="flex gap-4 sm:gap-5 md:gap-6 lg:gap-8 items-center w-max min-w-full">
+            {images.map((item, i) => (
+              <FeaturedCard
+                key={`${str(item, "image") || str(item, "video_url") || str(item, "instagram_url")}-${i}`}
+                item={item}
+                index={i}
+              />
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   );
 }
+

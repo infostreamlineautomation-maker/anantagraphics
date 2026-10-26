@@ -12,39 +12,28 @@ import { useToast } from "@/components/ui/Toast";
 import { adminFetch } from "@/lib/api";
 import { errorMessage, useResource, useUnsavedChanges } from "@/lib/hooks";
 import { SITE_URL } from "@/lib/media";
-import { PaletteInput } from "@/components/ui/PaletteInput";
-import { TagInput } from "@/components/ui/TagInput";
 import type { WorkCategory } from "@/lib/types";
 
 import { SeoPanel } from "./SeoPanel";
 
-type Draft = Pick<
-  WorkCategory,
-  | "name"
-  | "slug"
-  | "short_description"
-  | "card_image"
-  | "secondary_image"
-  | "heading"
-  | "intro"
-  | "craft_tags"
-  | "color_palette"
-  | "is_active"
-  | "meta_title"
-  | "meta_description"
-  | "og_image"
->;
+type Draft = {
+  name: string;
+  slug: string;
+  card_image: string | null;
+  heading: string | null;
+  intro: string | null;
+  is_active: boolean;
+  meta_title: string | null;
+  meta_description: string | null;
+  og_image: string | null;
+};
 
 const EMPTY: Draft = {
   name: "",
   slug: "",
-  short_description: null,
   card_image: null,
-  secondary_image: null,
   heading: null,
   intro: null,
-  craft_tags: [],
-  color_palette: [],
   is_active: true,
   meta_title: null,
   meta_description: null,
@@ -54,13 +43,9 @@ const EMPTY: Draft = {
 const pick = (c: WorkCategory): Draft => ({
   name: c.name,
   slug: c.slug,
-  short_description: c.short_description,
   card_image: c.card_image,
-  secondary_image: c.secondary_image,
   heading: c.heading,
   intro: c.intro,
-  craft_tags: c.craft_tags || [],
-  color_palette: c.color_palette || [],
   is_active: c.is_active,
   meta_title: c.meta_title,
   meta_description: c.meta_description,
@@ -167,9 +152,9 @@ function CategoryForm({ initial }: { initial: WorkCategory | null }) {
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <div className="space-y-6">
-          <Panel title="Card on Our Work">
+          <Panel title="Category Information">
             <div className="grid gap-4 md:grid-cols-2">
-              <Field label="Name *" hint="Card title, e.g. “Packaging” (shown as “02 — Packaging”)">
+              <Field label="Name *" hint="Category name, e.g. “Packaging” (shown as “02 — Packaging”)">
                 <Input value={draft.name} maxLength={120} required onChange={(e) => set({ name: e.target.value })} />
               </Field>
               <Field label="URL slug" hint={`Website address: /our-work/${draft.slug || "…"} · leave empty to generate from the name`}>
@@ -180,46 +165,15 @@ function CategoryForm({ initial }: { initial: WorkCategory | null }) {
                   onChange={(e) => set({ slug: e.target.value.toLowerCase() })}
                 />
               </Field>
-              <Field label="Card text" className="md:col-span-2">
-                <Textarea rows={2} value={draft.short_description ?? ""} maxLength={300} onChange={(e) => set({ short_description: orNull(e.target.value) })} />
-              </Field>
             </div>
           </Panel>
 
-          <Panel
-            title="Work Card (3D Flip Specs)"
-            description="Finishing details and color palette swatches displayed on the back of this category card when flipped on hover."
-          >
-            <div className="space-y-5">
-              <Field
-                label="Craft & Finishing Tags"
-                hint="Press Enter after each tag (e.g. 'Soft-Touch Matte', 'Gold Foil Deboss', 'Rigid Boxboard', 'Precision Die-Cut')."
-              >
-                <TagInput
-                  value={draft.craft_tags}
-                  onChange={(craft_tags) => set({ craft_tags })}
-                  placeholder="Type tag and press Enter"
-                />
-              </Field>
-
-              <Field
-                label="Color Palette Swatches"
-                hint="Curated brand & material swatches displayed on the back face."
-              >
-                <PaletteInput
-                  value={draft.color_palette}
-                  onChange={(color_palette) => set({ color_palette })}
-                />
-              </Field>
-            </div>
-          </Panel>
-
-          <Panel title="Category page" description="The header above this category's project cards.">
+          <Panel title="Category Page Header" description="Heading and description displayed at the top of this category's project page.">
             <div className="space-y-4">
               <Field label="Heading" hint="Leave empty to use the name">
                 <Input value={draft.heading ?? ""} maxLength={200} placeholder="Packaging Solutions" onChange={(e) => set({ heading: orNull(e.target.value) })} />
               </Field>
-              <Field label="Intro text">
+              <Field label="Description text" hint="Displayed under the heading on the category page.">
                 <Textarea rows={3} value={draft.intro ?? ""} onChange={(e) => set({ intro: orNull(e.target.value) })} />
               </Field>
             </div>
@@ -233,11 +187,8 @@ function CategoryForm({ initial }: { initial: WorkCategory | null }) {
             <Toggle checked={draft.is_active} onChange={(is_active) => set({ is_active })} label={draft.is_active ? "Visible on website" : "Hidden from website"} />
             <p className="mt-2 text-xs text-muted">Hiding a category also hides its projects.</p>
           </Panel>
-          <Panel title="Card images">
-            <div className="space-y-5">
-              <ImageField label="Primary card image" hint="Front of card. Portrait works best (about 6:7)." value={draft.card_image} onChange={(card_image) => set({ card_image })} aspect="aspect-[6/7]" />
-              <ImageField label="Secondary card image" hint="Alternate photo of this work shown when flipped on hover." value={draft.secondary_image} onChange={(secondary_image) => set({ secondary_image })} aspect="aspect-[6/7]" />
-            </div>
+          <Panel title="Card Image">
+            <ImageField label="Primary card image" hint="Square card image shown in Our Work grid." value={draft.card_image} onChange={(card_image) => set({ card_image })} aspect="aspect-square" />
           </Panel>
           {current && (
             <LinkButton href={`/projects?category=${current.id}`} variant="secondary" className="w-full">

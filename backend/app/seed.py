@@ -68,7 +68,7 @@ def seed_pages(db: Session, reset: bool, sync: bool = False) -> int:
             if row is None:
                 db.add(PageSection(page=page, key=key, **values))
                 n += 1
-            elif reset or (sync and key == "featured"):
+            elif reset or (sync and key in ("featured", "stats")):
                 for k, v in values.items():
                     setattr(row, k, v)
                 n += 1
@@ -100,6 +100,57 @@ def seed_work(db: Session, reset: bool) -> int:
             elif _apply(project, pdata, reset):
                 n += 1
     return n
+
+
+def sync_client_projects(db: Session) -> dict[str, int]:
+    """Sync projects to strictly match the curated real client projects in WORK_CATEGORIES,
+    removing obsolete placeholder projects and populating real client works."""
+    valid_slugs = set()
+    for cat in WORK_CATEGORIES:
+        for p in cat.get("projects", []):
+            valid_slugs.add(p["slug"])
+
+    # Remove projects not in valid_slugs
+    old_projects = db.scalars(select(Project)).all()
+    deleted = 0
+    for op in old_projects:
+        if op.slug not in valid_slugs:
+            db.delete(op)
+            deleted += 1
+    db.flush()
+
+    created = 0
+    updated = 0
+    for seq, data in enumerate(WORK_CATEGORIES):
+        data = dict(data)
+        projects = data.pop("projects", [])
+        category = db.scalar(select(WorkCategory).where(WorkCategory.slug == data["slug"]))
+        if category is None:
+            category = WorkCategory(**data, sequence=seq)
+            db.add(category)
+            db.flush()
+        else:
+            for k, v in data.items():
+                setattr(category, k, v)
+            category.sequence = seq
+
+        for pseq, pdata in enumerate(projects):
+            pdata = dict(pdata)
+            gallery = _extra_gallery(pdata.pop("gallery", [pdata["cover_image"]]))
+            project = db.scalar(select(Project).where(Project.slug == pdata["slug"]))
+            if project is None:
+                db.add(Project(**pdata, gallery=gallery, category_id=category.id, sequence=pseq, is_active=True))
+                created += 1
+            else:
+                project.category_id = category.id
+                project.sequence = pseq
+                project.gallery = gallery
+                project.is_active = True
+                for k, v in pdata.items():
+                    setattr(project, k, v)
+                updated += 1
+    db.commit()
+    return {"deleted": deleted, "created": created, "updated": updated}
 
 
 def seed_lists(db: Session, reset: bool = False, sync: bool = False) -> int:

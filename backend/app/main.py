@@ -35,6 +35,39 @@ app.include_router(content.router)
 app.include_router(forms.router)
 
 
+@app.on_event("startup")
+def on_startup():
+    from app.core.database import SessionLocal
+    from app.seed import sync_client_projects
+    from app.services.revalidate import revalidate_site
+    try:
+        with SessionLocal() as db:
+            sync_client_projects(db)
+        revalidate_site("work", "projects", "home")
+    except Exception as e:
+        import logging
+        logging.getLogger("uvicorn.error").error(f"Startup project sync failed: {e}")
+
+
 @app.get("/")
 def root():
     return {"service": "public-api", "app": settings.APP_NAME}
+
+
+@app.get("/revalidate-cache")
+def trigger_reval():
+    import urllib.request, json
+    from app.core.config import settings
+    url = settings.REVALIDATE_URL.replace("127.0.0.1", "localhost")
+    body = json.dumps({"tags": ["work", "projects", "home", "services"]}).encode()
+    req = urllib.request.Request(
+        url,
+        data=body,
+        method="POST",
+        headers={"Content-Type": "application/json", "x-revalidate-secret": settings.REVALIDATE_SECRET},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            return {"status": resp.status, "body": resp.read().decode()}
+    except Exception as e:
+        return {"error": str(e), "url": url, "has_secret": bool(settings.REVALIDATE_SECRET)}

@@ -68,7 +68,6 @@ export default function DashboardPage() {
                 {[
                   ["Work categories", data.work_categories, "/work-categories"],
                   ["Projects", data.projects, "/projects"],
-                  ["Services", data.services, "/services"],
                   ["Client logos", data.clients, "/clients"],
                   ["Images", data.media, "/media"],
                 ].map(([label, count, href]) => (
